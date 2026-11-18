@@ -1,0 +1,25 @@
+name: Incremental ingestion
+# Adds the next batch of postings (+ re-embeds changed rows) so the index keeps changing.
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      add:
+        description: "max new postings to add"
+        default: "200"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements-ingest.txt
+      - run: python cli.py fetch
+      - run: python cli.py ingest --add ${{ github.event.inputs.add || '200' }}
+      - run: python cli.py stats
