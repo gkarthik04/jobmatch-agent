@@ -68,7 +68,7 @@ def classify_error(exc: BaseException) -> tuple[str, float]:
             return "daily", max(delay, 3600.0)
         return "minute", min(max(delay, 5.0), 120.0)
     if code in (500, 502, 503, 504) or "unavailable" in low or "timeout" in low:
-        return "down", 60.0
+        return "down", 20.0  # provider 503 spikes are brief: retry soon, another model may serve meanwhile
     if code == 404:
         return "unsupported", 24 * 3600.0
     if code == 400:
