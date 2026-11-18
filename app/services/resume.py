@@ -28,8 +28,8 @@ SYSTEM_V1 = (
 )
 
 
-# v2 (measured in evals/RESULTS.md): same rules, plus an explicit month-by-month procedure for
-# experience_years, the field v1 got wrong most often.
+# v2 = v1 + an explicit month-by-month procedure for experience_years. Measured in
+# evals/RESULTS.md it did NOT beat v1 (86.7% vs 93.3% within 0.5y on 15 resumes), so v1 ships.
 SYSTEM_V2 = SYSTEM_V1 + (
     " experience_years procedure: for every job/internship take (end date - start date) in months "
     "from the DATES (if a stated duration contradicts the dates, trust the dates); full-time roles "
@@ -37,7 +37,7 @@ SYSTEM_V2 = SYSTEM_V1 + (
     "double count overlapping periods; sum the months, divide by 12, round to 1 decimal."
 )
 PROMPTS = {"v1": SYSTEM_V1, "v2": SYSTEM_V2}
-SYSTEM = SYSTEM_V2
+SYSTEM = SYSTEM_V1
 
 
 def extract_pdf_text(data: bytes) -> str:

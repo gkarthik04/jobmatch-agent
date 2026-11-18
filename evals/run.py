@@ -80,7 +80,10 @@ def render_structured(out: list[str]) -> None:
     for k in v2["fields"]:
         a, b = v1["fields"].get(k, (None, 0)), v2["fields"][k]
         rows.append([k, "-" if a[0] is None else f"{a[0]:.3f}", f"{b[0]:.3f}" + (f" (n={b[1]})" if b[1] != v2["n"] else "")])
-    out.append(md_table(["Metric", "Prompt v1 (baseline)", "Prompt v2 (current)"], rows) + "\n")
+    out.append(md_table(["Metric", "Prompt v1 (shipped)", "Prompt v2 (tried: explicit month arithmetic)"], rows) + "\n")
+    out.append("Negative result: the more explicit v2 prompt did not improve experience accuracy "
+               "(n=15, a one-resume difference), so v1 stays the default. The measured improvements "
+               "are in section 1.\n")
 
 
 def render_agent(out: list[str]) -> None:
@@ -100,6 +103,14 @@ def render_agent(out: list[str]) -> None:
             ["Mean latency per turn", f"{d['mean_latency_ms'] / 1000:.1f} s"],
             ["Mean tokens per turn", f"{d['mean_tokens_per_turn']:.0f}"]]
     out.append(md_table(["Metric", "Result"], rows) + "\n")
+    first = load("agent", "firstrun")
+    if first:
+        out.append(
+            f"Disclosure: the first full run scored {first['conversations_passed']:.1%} of conversations "
+            f"({first['argument_accuracy']:.1%} argument accuracy). Both misses were bugs in my eval checks, "
+            "not agent errors (a same-turn \"top one\" reference was resolved against the previous turn only; "
+            "\"Texas\" was rejected because the check demanded the literal \"tx\"). I fixed the checks and "
+            "re-ran the whole suite; the first-run file is kept in `evals/results/agent_firstrun.json`.\n")
     rows = [[c["name"], "pass" if c["passed"] else "FAIL", " | ".join(",".join(t["tools_called"]) or "-" for t in c["turns"])]
             for c in d["conversations"]]
     out.append(md_table(["Conversation", "Result", "Tools called (per turn)"], rows) + "\n")
