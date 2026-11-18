@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     agent_max_steps: int = 6
     tool_timeout_s: float = 20.0
     llm_timeout_s: float = 45.0
+    llm_max_wait_s: float = 30.0  # how long a call may wait for a parked model to recover
     # hard latency budgets for optional LLM enhancements: on timeout we degrade, never hang
     rerank_budget_s: float = 20.0
     explain_budget_s: float = 25.0

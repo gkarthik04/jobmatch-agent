@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from app.errors import AppError
 from app.schemas import ProfileSchema
+from app.services.llm import LLMUnavailable
 
 log = logging.getLogger("app.resume")
 
@@ -84,6 +85,9 @@ async def parse_resume(
             if stats is not None:
                 stats["attempts"] = attempt
             return profile
+        except LLMUnavailable as exc:
+            raise AppError(503, "llm_unavailable",
+                           "The language model is busy right now, please retry in a minute") from exc
         except (ValidationError, ValueError) as exc:
             last_error = str(exc)[:800]
             log.warning("resume parse invalid", extra={"attempt": attempt, "error": last_error})

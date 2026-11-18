@@ -161,3 +161,19 @@ def test_gemini_declarations_cover_all_tools():
     search = next(d for d in gemini_tools()[0].function_declarations if d.name == "search_jobs")
     assert search.parameters.required == ["query"]
     assert issubclass(JobIdArgs, BaseModel)
+
+
+async def test_resume_parse_maps_llm_outage_to_503():
+    import pytest
+
+    from app.errors import AppError
+    from app.services.llm import LLMUnavailable
+    from app.services.resume import parse_resume
+
+    class Down:
+        async def generate(self, *a, **k):
+            raise LLMUnavailable("all models unavailable")
+
+    with pytest.raises(AppError) as e:
+        await parse_resume(Down(), "some resume text")
+    assert e.value.status == 503 and e.value.code == "llm_unavailable"

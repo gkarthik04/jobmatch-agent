@@ -10,19 +10,25 @@
    "recall@10": 0.66046511627907,
    "mrr": 0.8521963824289406,
    "ndcg@10": 0.6872747226342563,
-   "ms": 917.6083720819807
+   "ms": 925.308953477936
   },
   "fts": {
    "recall@10": 0.49302325581395345,
    "mrr": 0.5930232558139535,
    "ndcg@10": 0.4814210191855342,
-   "ms": 675.7725767769613
+   "ms": 725.4351186132882
   },
   "hybrid": {
    "recall@10": 0.7116279069767443,
    "mrr": 0.8581949058693245,
    "ndcg@10": 0.731448655031713,
-   "ms": 1149.666441864399
+   "ms": 1146.6131860303672
+  },
+  "hybrid_rerank": {
+   "recall@10": 0.7767441860465116,
+   "mrr": 0.9127906976744186,
+   "ndcg@10": 0.7992341605027501,
+   "ms": 12231.816646507616
   }
  },
  "per_case": {
@@ -31,301 +37,301 @@
     "recall@10": 0.2,
     "mrr": 0.5,
     "ndcg@10": 0.22400556151517553,
-    "ms": 2541.9327998533845,
+    "ms": 2592.7691000979394,
     "query": "I want to build and maintain data pipelines and ETL workflows"
    },
    "2": {
     "recall@10": 0.1,
     "mrr": 0.2,
     "ndcg@10": 0.08514311764162098,
-    "ms": 931.9124000612646,
+    "ms": 944.0967000555247,
     "query": "analyse business data and build dashboards for stakeholders"
    },
    "3": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.70844095012329,
-    "ms": 884.1663000639528,
+    "ms": 907.5782999861985,
     "query": "train and deploy machine learning models"
    },
    "4": {
     "recall@10": 0.2,
     "mrr": 1.0,
     "ndcg@10": 0.31488013066763093,
-    "ms": 881.5237998496741,
+    "ms": 898.9605000242591,
     "query": "statistical modelling and experimentation role"
    },
    "5": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.6659485553357843,
-    "ms": 893.5239999555051,
+    "ms": 909.5564000308514,
     "query": "write backend services and REST APIs"
    },
    "6": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.793584067764911,
-    "ms": 851.5600999817252,
+    "ms": 889.2751999665052,
     "query": "build modern user interfaces with React"
    },
    "7": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7655934900767002,
-    "ms": 858.3482000976801,
+    "ms": 904.6080999542028,
     "query": "full stack web developer who can do both client and server"
    },
    "8": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7682269253321375,
-    "ms": 854.2539000045508,
+    "ms": 922.8956999722868,
     "query": "cloud infrastructure and CI/CD automation"
    },
    "9": {
     "recall@10": 0.3,
     "mrr": 0.5,
     "ndcg@10": 0.2999050316974944,
-    "ms": 856.3232000451535,
+    "ms": 923.8968000281602,
     "query": "automate tests and ensure software quality"
    },
    "10": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.7222954974312066,
-    "ms": 867.2843999229372,
+    "ms": 1145.2569998800755,
     "query": "mobile app development for iOS or Android"
    },
    "11": {
     "recall@10": 0.1,
     "mrr": 0.5,
     "ndcg@10": 0.13886244387355454,
-    "ms": 921.0917998570949,
+    "ms": 959.8129999358207,
     "query": "entry level software engineering role for a new graduate"
    },
    "12": {
     "recall@10": 0.3,
     "mrr": 1.0,
     "ndcg@10": 0.43231813227099475,
-    "ms": 1003.0735000036657,
+    "ms": 896.5914000291377,
     "query": "lead an engineering team"
    },
    "13": {
     "recall@10": 0.6,
     "mrr": 0.25,
     "ndcg@10": 0.45260163770064993,
-    "ms": 1415.1173001155257,
+    "ms": 922.0918000210077,
     "query": "protect company systems from cyber threats"
    },
    "14": {
     "recall@10": 0.3,
     "mrr": 1.0,
     "ndcg@10": 0.40853591842579556,
-    "ms": 841.127100167796,
+    "ms": 869.6405999362469,
     "query": "keep company computers and networks running smoothly"
    },
    "15": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7264127302306637,
-    "ms": 844.503799919039,
+    "ms": 873.2070999685675,
     "query": "own the product roadmap and work with engineers"
    },
    "16": {
     "recall@10": 0.2,
     "mrr": 0.1111111111111111,
     "ndcg@10": 0.10209739512291163,
-    "ms": 943.9099000301212,
+    "ms": 902.8353998437524,
     "query": "design user experiences and interfaces"
    },
    "17": {
     "recall@10": 0.5,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.4269620754585236,
-    "ms": 846.3220000267029,
+    "ms": 881.3479000236839,
     "query": "manage technology or software delivery projects"
    },
    "18": {
     "recall@10": 0.3,
     "mrr": 0.25,
     "ndcg@10": 0.2426178552850034,
-    "ms": 851.224800106138,
+    "ms": 864.8138998541981,
     "query": "gather business requirements and translate them for developers"
    },
    "19": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.7951657524814092,
-    "ms": 858.2343999296427,
+    "ms": 883.1127001903951,
     "query": "financial analysis, budgeting and forecasting"
    },
    "20": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.9216017310213247,
-    "ms": 879.1266998741776,
+    "ms": 885.6122000142932,
     "query": "bookkeeping, accounts payable and receivable"
    },
    "21": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8236998933965709,
-    "ms": 863.177299965173,
+    "ms": 888.0113000050187,
     "query": "inside sales and business development for B2B clients"
    },
    "22": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.6235744328990731,
-    "ms": 860.25770008564,
+    "ms": 846.254900097847,
     "query": "run digital marketing campaigns and SEO"
    },
    "23": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8630152897016883,
-    "ms": 855.1785999443382,
+    "ms": 916.6637000162154,
     "query": "recruiting and talent acquisition"
    },
    "24": {
     "recall@10": 0.3,
     "mrr": 0.5,
     "ndcg@10": 0.32730659600126993,
-    "ms": 888.8733999338001,
+    "ms": 858.0191000364721,
     "query": "help customers over phone and chat"
    },
    "25": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8318477135310893,
-    "ms": 885.9147999901325,
+    "ms": 875.4284998867661,
     "query": "supply chain, procurement and logistics coordination"
    },
    "26": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8512360941594274,
-    "ms": 867.2327001113445,
+    "ms": 902.6584001258016,
     "query": "administrative and office support"
    },
    "27": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.9052116356304493,
-    "ms": 860.918499995023,
+    "ms": 875.9621998760849,
     "query": "teach students in a classroom"
    },
    "28": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 912.396099884063,
+    "ms": 841.3258998189121,
     "query": "work in a pharmacy"
    },
    "29": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 876.1030999012291,
+    "ms": 849.8183998744935,
     "query": "drive trucks or make deliveries"
    },
    "30": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8630152897016883,
-    "ms": 842.9719998966902,
+    "ms": 839.6429000422359,
     "query": "warehouse and forklift work"
    },
    "31": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.6489315753318465,
-    "ms": 879.9882000312209,
+    "ms": 872.5465000607073,
     "query": "mechanical engineering and product design"
    },
    "32": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 827.2918998263776,
+    "ms": 873.6613998189569,
     "query": "electrical or electronics engineering"
    },
    "33": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 837.105399928987,
+    "ms": 861.1185001209378,
     "query": "civil engineering and construction projects"
    },
    "34": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.84860265890399,
-    "ms": 825.5450001452118,
+    "ms": 865.6470000278205,
     "query": "manage a retail store"
    },
    "35": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.84860265890399,
-    "ms": 832.7263998799026,
+    "ms": 872.4033001344651,
     "query": "restaurant and hospitality work"
    },
    "36": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.835780413693672,
-    "ms": 837.4989000149071,
+    "ms": 867.1858999878168,
     "query": "legal work at a law firm"
    },
    "37": {
     "recall@10": 0.8,
     "mrr": 0.5,
     "ndcg@10": 0.6851198693323691,
-    "ms": 830.9203998651356,
+    "ms": 863.3612999692559,
     "query": "real estate and property management"
    },
    "38": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 833.7469000834972,
+    "ms": 853.425299981609,
     "query": "insurance underwriting and claims"
    },
    "39": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 840.113699901849,
+    "ms": 863.6512998491526,
     "query": "banking, loans and mortgage"
    },
    "40": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 841.7931001167744,
+    "ms": 829.898800002411,
     "query": "equipment maintenance technician"
    },
    "41": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8415908474314976,
-    "ms": 834.61770019494,
+    "ms": 828.7576998118311,
     "query": "laboratory and scientific research"
    },
    "42": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8263333286520083,
-    "ms": 850.2458999864757,
+    "ms": 833.3412001375109,
     "query": "data entry and clerical work"
    },
    "43": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.933745776545611,
-    "ms": 847.9818999767303,
+    "ms": 831.5417000558227,
     "query": "write and edit content"
    }
   },
@@ -334,301 +340,301 @@
     "recall@10": 0.3,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.28323251649726616,
-    "ms": 661.0648001078516,
+    "ms": 694.0359000582248,
     "query": "I want to build and maintain data pipelines and ETL workflows"
    },
    "2": {
     "recall@10": 0.0,
     "mrr": 0.0,
     "ndcg@10": 0.0,
-    "ms": 652.538200141862,
+    "ms": 684.1861999128014,
     "query": "analyse business data and build dashboards for stakeholders"
    },
    "3": {
     "recall@10": 0.0,
     "mrr": 0.0,
     "ndcg@10": 0.0,
-    "ms": 641.186699969694,
+    "ms": 675.0681998673826,
     "query": "train and deploy machine learning models"
    },
    "4": {
     "recall@10": 0.4,
     "mrr": 1.0,
     "ndcg@10": 0.47842151728792726,
-    "ms": 619.2580999340862,
+    "ms": 604.9128000158817,
     "query": "statistical modelling and experimentation role"
    },
    "5": {
     "recall@10": 0.1,
     "mrr": 0.25,
     "ndcg@10": 0.09478836436955078,
-    "ms": 655.1385999191552,
+    "ms": 687.8460999578238,
     "query": "write backend services and REST APIs"
    },
    "6": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.5517854393872873,
-    "ms": 640.54170018062,
+    "ms": 626.8752000760287,
     "query": "build modern user interfaces with React"
    },
    "7": {
     "recall@10": 0.0,
     "mrr": 0.0,
     "ndcg@10": 0.0,
-    "ms": 648.9305999130011,
+    "ms": 685.9071000944823,
     "query": "full stack web developer who can do both client and server"
    },
    "8": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6780494608112012,
-    "ms": 622.9348001070321,
+    "ms": 614.7155999206007,
     "query": "cloud infrastructure and CI/CD automation"
    },
    "9": {
     "recall@10": 0.4,
     "mrr": 0.2,
     "ndcg@10": 0.3031595321740454,
-    "ms": 641.5705000981688,
+    "ms": 626.1991998180747,
     "query": "automate tests and ensure software quality"
    },
    "10": {
     "recall@10": 0.6,
     "mrr": 0.5,
     "ndcg@10": 0.5481351590340573,
-    "ms": 749.0697999019176,
+    "ms": 624.4319998659194,
     "query": "mobile app development for iOS or Android"
    },
    "11": {
     "recall@10": 0.2,
     "mrr": 0.16666666666666666,
     "ndcg@10": 0.1478294909154526,
-    "ms": 701.6754001379013,
+    "ms": 625.6375000812113,
     "query": "entry level software engineering role for a new graduate"
    },
    "12": {
     "recall@10": 0.2,
     "mrr": 0.16666666666666666,
     "ndcg@10": 0.15176219107803537,
-    "ms": 779.8011000268161,
+    "ms": 616.680100094527,
     "query": "lead an engineering team"
    },
    "13": {
     "recall@10": 0.3,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.2710884709729799,
-    "ms": 1076.0172000154853,
+    "ms": 641.5656001772732,
     "query": "protect company systems from cyber threats"
    },
    "14": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7381919257729245,
-    "ms": 650.4021000582725,
+    "ms": 645.7416000775993,
     "query": "keep company computers and networks running smoothly"
    },
    "15": {
     "recall@10": 0.3,
     "mrr": 0.2,
     "ndcg@10": 0.23690530871965634,
-    "ms": 648.8781999796629,
+    "ms": 639.6927998866886,
     "query": "own the product roadmap and work with engineers"
    },
    "16": {
     "recall@10": 0.2,
     "mrr": 0.1,
     "ndcg@10": 0.09803928583135704,
-    "ms": 646.8247000593692,
+    "ms": 638.0330000538379,
     "query": "design user experiences and interfaces"
    },
    "17": {
     "recall@10": 0.6,
     "mrr": 0.5,
     "ndcg@10": 0.539987338899539,
-    "ms": 713.8381998520344,
+    "ms": 639.0893999487162,
     "query": "manage technology or software delivery projects"
    },
    "18": {
     "recall@10": 0.1,
     "mrr": 1.0,
     "ndcg@10": 0.22009176629808017,
-    "ms": 712.6119001768529,
+    "ms": 712.5050998292863,
     "query": "gather business requirements and translate them for developers"
    },
    "19": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.5298982599625925,
-    "ms": 625.2921998966485,
+    "ms": 646.7156000435352,
     "query": "financial analysis, budgeting and forecasting"
    },
    "20": {
     "recall@10": 0.9,
     "mrr": 0.5,
     "ndcg@10": 0.7799082337019199,
-    "ms": 651.5486999414861,
+    "ms": 664.8675999604166,
     "query": "bookkeeping, accounts payable and receivable"
    },
    "21": {
     "recall@10": 0.1,
     "mrr": 0.5,
     "ndcg@10": 0.13886244387355454,
-    "ms": 727.3881000000983,
+    "ms": 658.6607000790536,
     "query": "inside sales and business development for B2B clients"
    },
    "22": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.9266360779006401,
-    "ms": 623.7070001661777,
+    "ms": 650.6715998984873,
     "query": "run digital marketing campaigns and SEO"
    },
    "23": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 638.7147000059485,
+    "ms": 641.5319999214262,
     "query": "recruiting and talent acquisition"
    },
    "24": {
     "recall@10": 0.2,
     "mrr": 1.0,
     "ndcg@10": 0.30523488393970116,
-    "ms": 699.3190001230687,
+    "ms": 656.1255999840796,
     "query": "help customers over phone and chat"
    },
    "25": {
     "recall@10": 0.5,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.40346228142267715,
-    "ms": 643.1750000920147,
+    "ms": 639.9213001132011,
     "query": "supply chain, procurement and logistics coordination"
    },
    "26": {
     "recall@10": 0.4,
     "mrr": 0.25,
     "ndcg@10": 0.2940945979596688,
-    "ms": 710.0166999734938,
+    "ms": 640.1607999578118,
     "query": "administrative and office support"
    },
    "27": {
     "recall@10": 0.7,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.5774250016294136,
-    "ms": 633.673100033775,
+    "ms": 611.9415999855846,
     "query": "teach students in a classroom"
    },
    "28": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 603.8772999309003,
+    "ms": 606.0021999292076,
     "query": "work in a pharmacy"
    },
    "29": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6185197008414421,
-    "ms": 630.6339001748711,
+    "ms": 641.9903000351042,
     "query": "drive trucks or make deliveries"
    },
    "30": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 618.7444000970572,
+    "ms": 604.3228998314589,
     "query": "warehouse and forklift work"
    },
    "31": {
     "recall@10": 0.1,
     "mrr": 0.16666666666666666,
     "ndcg@10": 0.07839826897867533,
-    "ms": 664.6848001983017,
+    "ms": 653.3809001557529,
     "query": "mechanical engineering and product design"
    },
    "32": {
     "recall@10": 0.6,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.4892835987503298,
-    "ms": 643.9263999927789,
+    "ms": 3542.551300022751,
     "query": "electrical or electronics engineering"
    },
    "33": {
     "recall@10": 0.4,
     "mrr": 1.0,
     "ndcg@10": 0.5100691314582919,
-    "ms": 665.189600083977,
+    "ms": 1139.0645001083612,
     "query": "civil engineering and construction projects"
    },
    "34": {
     "recall@10": 0.8,
     "mrr": 0.5,
     "ndcg@10": 0.6851198693323691,
-    "ms": 645.6665999721736,
+    "ms": 650.2918999176472,
     "query": "manage a retail store"
    },
    "35": {
     "recall@10": 0.6,
     "mrr": 0.3333333333333333,
     "ndcg@10": 0.46785915648013904,
-    "ms": 605.7426000479609,
+    "ms": 620.5703001469374,
     "query": "restaurant and hospitality work"
    },
    "36": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.8553475075669357,
-    "ms": 637.7231997903436,
+    "ms": 645.3114000614733,
     "query": "legal work at a law firm"
    },
    "37": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.5957616317188126,
-    "ms": 656.2693999148905,
+    "ms": 668.4164002072066,
     "query": "real estate and property management"
    },
    "38": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6114735274236563,
-    "ms": 639.6054001525044,
+    "ms": 684.9557999521494,
     "query": "insurance underwriting and claims"
    },
    "39": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.866947989864271,
-    "ms": 622.725100023672,
+    "ms": 622.5489000789821,
     "query": "banking, loans and mortgage"
    },
    "40": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 650.7274000905454,
+    "ms": 651.7862000036985,
     "query": "equipment maintenance technician"
    },
    "41": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.914856882358379,
-    "ms": 641.5651000570506,
+    "ms": 670.1309001073241,
     "query": "laboratory and scientific research"
    },
    "42": {
     "recall@10": 0.0,
     "mrr": 0.0,
     "ndcg@10": 0.0,
-    "ms": 918.7744001392275,
+    "ms": 679.7321999911219,
     "query": "data entry and clerical work"
    },
    "43": {
     "recall@10": 0.8,
     "mrr": 0.5,
     "ndcg@10": 0.7104770117651426,
-    "ms": 797.2480999305844,
+    "ms": 618.9338001422584,
     "query": "write and edit content"
    }
   },
@@ -637,301 +643,604 @@
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.5795003533950692,
-    "ms": 1165.056600002572,
+    "ms": 1108.5562999360263,
     "query": "I want to build and maintain data pipelines and ETL workflows"
    },
    "2": {
     "recall@10": 0.0,
     "mrr": 0.0,
     "ndcg@10": 0.0,
-    "ms": 1140.0500000454485,
+    "ms": 1112.102699931711,
     "query": "analyse business data and build dashboards for stakeholders"
    },
    "3": {
     "recall@10": 0.4,
     "mrr": 1.0,
     "ndcg@10": 0.5100691314582919,
-    "ms": 1167.1480999793857,
+    "ms": 1106.5159998834133,
     "query": "train and deploy machine learning models"
    },
    "4": {
     "recall@10": 0.6,
     "mrr": 0.5,
     "ndcg@10": 0.5551469705065496,
-    "ms": 1101.2726000044495,
+    "ms": 1197.7546999696642,
     "query": "statistical modelling and experimentation role"
    },
    "5": {
     "recall@10": 0.5,
     "mrr": 1.0,
     "ndcg@10": 0.5983950669742499,
-    "ms": 1116.1474001128227,
+    "ms": 1354.7257999889553,
     "query": "write backend services and REST APIs"
    },
    "6": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.800693766409882,
-    "ms": 1118.04259987548,
+    "ms": 1097.7362000849098,
     "query": "build modern user interfaces with React"
    },
    "7": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.793584067764911,
-    "ms": 1152.9191001318395,
+    "ms": 1102.7755001559854,
     "query": "full stack web developer who can do both client and server"
    },
    "8": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.9216017310213247,
-    "ms": 1122.9120998177677,
+    "ms": 1080.0507999956608,
     "query": "cloud infrastructure and CI/CD automation"
    },
    "9": {
     "recall@10": 0.1,
     "mrr": 0.25,
     "ndcg@10": 0.09478836436955078,
-    "ms": 1164.896999951452,
+    "ms": 1147.6332999300212,
     "query": "automate tests and ensure software quality"
    },
    "10": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.7183627972686238,
-    "ms": 1108.178400201723,
+    "ms": 1103.2688999548554,
     "query": "mobile app development for iOS or Android"
    },
    "11": {
     "recall@10": 0.1,
     "mrr": 1.0,
     "ndcg@10": 0.22009176629808017,
-    "ms": 1110.3984001092613,
+    "ms": 1105.0811000168324,
     "query": "entry level software engineering role for a new graduate"
    },
    "12": {
     "recall@10": 0.3,
     "mrr": 0.14285714285714285,
     "ndcg@10": 0.20641593223508903,
-    "ms": 1101.5741000883281,
+    "ms": 1131.4445999450982,
     "query": "lead an engineering team"
    },
    "13": {
     "recall@10": 0.4,
     "mrr": 1.0,
     "ndcg@10": 0.5541432109622958,
-    "ms": 1150.8149998262525,
+    "ms": 1109.0015000663698,
     "query": "protect company systems from cyber threats"
    },
    "14": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.933745776545611,
-    "ms": 1135.3124999441206,
+    "ms": 1104.9230999778956,
     "query": "keep company computers and networks running smoothly"
    },
    "15": {
     "recall@10": 0.4,
     "mrr": 0.2,
     "ndcg@10": 0.2934163982736371,
-    "ms": 1150.95299994573,
+    "ms": 1104.8904000781476,
     "query": "own the product roadmap and work with engineers"
    },
    "16": {
     "recall@10": 0.4,
     "mrr": 0.16666666666666666,
     "ndcg@10": 0.227804435066758,
-    "ms": 1137.1597000397742,
+    "ms": 1124.8259998392314,
     "query": "design user experiences and interfaces"
    },
    "17": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6390097281865127,
-    "ms": 1158.6362000089139,
+    "ms": 1104.088000021875,
     "query": "manage technology or software delivery projects"
    },
    "18": {
     "recall@10": 0.1,
     "mrr": 0.14285714285714285,
     "ndcg@10": 0.07336392209936005,
-    "ms": 1126.9131998997182,
+    "ms": 1209.032699931413,
     "query": "gather business requirements and translate them for developers"
    },
    "19": {
     "recall@10": 0.8,
     "mrr": 1.0,
     "ndcg@10": 0.7917063341896681,
-    "ms": 1114.8941998835653,
+    "ms": 1108.276799786836,
     "query": "financial analysis, budgeting and forecasting"
    },
    "20": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1118.013999890536,
+    "ms": 1153.8283999543637,
     "query": "bookkeeping, accounts payable and receivable"
    },
    "21": {
     "recall@10": 0.9,
     "mrr": 0.5,
     "ndcg@10": 0.7799082337019199,
-    "ms": 1155.744400108233,
+    "ms": 1189.2523998394608,
     "query": "inside sales and business development for B2B clients"
    },
    "22": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.772837825180752,
-    "ms": 1127.030299976468,
+    "ms": 1325.2454998437315,
     "query": "run digital marketing campaigns and SEO"
    },
    "23": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.9363792118010483,
-    "ms": 1105.017599882558,
+    "ms": 1120.464599924162,
     "query": "recruiting and talent acquisition"
    },
    "24": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7702043899253147,
-    "ms": 1126.5508001670241,
+    "ms": 1092.460700077936,
     "query": "help customers over phone and chat"
    },
    "25": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1155.3337001241744,
+    "ms": 1108.4550998639315,
     "query": "supply chain, procurement and logistics coordination"
    },
    "26": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6722390270733757,
-    "ms": 1119.708300102502,
+    "ms": 1099.64539995417,
     "query": "administrative and office support"
    },
    "27": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.933745776545611,
-    "ms": 1206.1819999944419,
+    "ms": 1091.6925999335945,
     "query": "teach students in a classroom"
    },
    "28": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1188.645200105384,
+    "ms": 1074.2424000054598,
     "query": "work in a pharmacy"
    },
    "29": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1218.4166999068111,
+    "ms": 1096.873400034383,
     "query": "drive trucks or make deliveries"
    },
    "30": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1181.1286001466215,
+    "ms": 1107.9212999902666,
     "query": "warehouse and forklift work"
    },
    "31": {
     "recall@10": 0.6,
     "mrr": 1.0,
     "ndcg@10": 0.6431211415940209,
-    "ms": 1196.3112000375986,
+    "ms": 1561.1569001339376,
     "query": "mechanical engineering and product design"
    },
    "32": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1170.1173998881131,
+    "ms": 1126.2314999476075,
     "query": "electrical or electronics engineering"
    },
    "33": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1183.6341999005526,
+    "ms": 1127.2216001525521,
     "query": "civil engineering and construction projects"
    },
    "34": {
     "recall@10": 0.9,
     "mrr": 1.0,
     "ndcg@10": 0.933745776545611,
-    "ms": 1327.7847000863403,
+    "ms": 1139.2494000028819,
     "query": "manage a retail store"
    },
    "35": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1156.2850000336766,
+    "ms": 1079.5308002270758,
     "query": "restaurant and hospitality work"
    },
    "36": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7453016244178956,
-    "ms": 1161.4941000007093,
+    "ms": 1120.2579999808222,
     "query": "legal work at a law firm"
    },
    "37": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1172.890500165522,
+    "ms": 1128.3553999383003,
     "query": "real estate and property management"
    },
    "38": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1159.3690000008792,
+    "ms": 1128.6051999777555,
     "query": "insurance underwriting and claims"
    },
    "39": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1116.143099963665,
+    "ms": 1264.5664000883698,
     "query": "banking, loans and mortgage"
    },
    "40": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1169.335599988699,
+    "ms": 1296.7203999869525,
     "query": "equipment maintenance technician"
    },
    "41": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1114.1498999204487,
+    "ms": 1107.0805999916047,
     "query": "laboratory and scientific research"
    },
    "42": {
     "recall@10": 0.7,
     "mrr": 1.0,
     "ndcg@10": 0.7529694065526482,
-    "ms": 1138.0928999278694,
+    "ms": 1151.0162998456508,
     "query": "data entry and clerical work"
    },
    "43": {
     "recall@10": 1.0,
     "mrr": 1.0,
     "ndcg@10": 1.0,
-    "ms": 1124.9975999817252,
+    "ms": 1101.6083001159132,
+    "query": "write and edit content"
+   }
+  },
+  "hybrid_rerank": {
+   "1": {
+    "recall@10": 0.5,
+    "mrr": 1.0,
+    "ndcg@10": 0.5579780239523999,
+    "ms": 7775.593700120226,
+    "query": "I want to build and maintain data pipelines and ETL workflows"
+   },
+   "2": {
+    "recall@10": 0.6,
+    "mrr": 0.3333333333333333,
+    "ndcg@10": 0.5079937796926363,
+    "ms": 7759.36960009858,
+    "query": "analyse business data and build dashboards for stakeholders"
+   },
+   "3": {
+    "recall@10": 0.8,
+    "mrr": 1.0,
+    "ndcg@10": 0.8364586133797037,
+    "ms": 9225.121000083163,
+    "query": "train and deploy machine learning models"
+   },
+   "4": {
+    "recall@10": 0.7,
+    "mrr": 0.5,
+    "ndcg@10": 0.6500332220485792,
+    "ms": 4399.897800059989,
+    "query": "statistical modelling and experimentation role"
+   },
+   "5": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.9305687780632227,
+    "ms": 10698.74419993721,
+    "query": "write backend services and REST APIs"
+   },
+   "6": {
+    "recall@10": 0.8,
+    "mrr": 1.0,
+    "ndcg@10": 0.826813366651774,
+    "ms": 9693.894899915904,
+    "query": "build modern user interfaces with React"
+   },
+   "7": {
+    "recall@10": 0.6,
+    "mrr": 1.0,
+    "ndcg@10": 0.727329844310522,
+    "ms": 22441.639999859035,
+    "query": "full stack web developer who can do both client and server"
+   },
+   "8": {
+    "recall@10": 0.8,
+    "mrr": 1.0,
+    "ndcg@10": 0.8572048559638628,
+    "ms": 18710.274999961257,
+    "query": "cloud infrastructure and CI/CD automation"
+   },
+   "9": {
+    "recall@10": 0.3,
+    "mrr": 0.25,
+    "ndcg@10": 0.24655055544758614,
+    "ms": 19232.53559996374,
+    "query": "automate tests and ensure software quality"
+   },
+   "10": {
+    "recall@10": 0.5,
+    "mrr": 1.0,
+    "ndcg@10": 0.6274092458891772,
+    "ms": 24653.265200089663,
+    "query": "mobile app development for iOS or Android"
+   },
+   "11": {
+    "recall@10": 0.3,
+    "mrr": 1.0,
+    "ndcg@10": 0.4690000933206748,
+    "ms": 51374.20630012639,
+    "query": "entry level software engineering role for a new graduate"
+   },
+   "12": {
+    "recall@10": 0.3,
+    "mrr": 1.0,
+    "ndcg@10": 0.36288691033421744,
+    "ms": 8136.551899835467,
+    "query": "lead an engineering team"
+   },
+   "13": {
+    "recall@10": 0.7,
+    "mrr": 1.0,
+    "ndcg@10": 0.7529694065526482,
+    "ms": 11856.693199835718,
+    "query": "protect company systems from cyber threats"
+   },
+   "14": {
+    "recall@10": 0.7,
+    "mrr": 0.3333333333333333,
+    "ndcg@10": 0.5559026721867443,
+    "ms": 9020.667599979788,
+    "query": "keep company computers and networks running smoothly"
+   },
+   "15": {
+    "recall@10": 0.9,
+    "mrr": 0.5,
+    "ndcg@10": 0.7799082337019199,
+    "ms": 20760.962799889967,
+    "query": "own the product roadmap and work with engineers"
+   },
+   "16": {
+    "recall@10": 0.6,
+    "mrr": 1.0,
+    "ndcg@10": 0.6992148198508501,
+    "ms": 10896.15449984558,
+    "query": "design user experiences and interfaces"
+   },
+   "17": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.9363792118010483,
+    "ms": 14229.916700161994,
+    "query": "manage technology or software delivery projects"
+   },
+   "18": {
+    "recall@10": 0.5,
+    "mrr": 0.3333333333333333,
+    "ndcg@10": 0.4163824138054737,
+    "ms": 43111.025699879974,
+    "query": "gather business requirements and translate them for developers"
+   },
+   "19": {
+    "recall@10": 0.8,
+    "mrr": 1.0,
+    "ndcg@10": 0.7917063341896681,
+    "ms": 8967.511299997568,
+    "query": "financial analysis, budgeting and forecasting"
+   },
+   "20": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 16368.359199957922,
+    "query": "bookkeeping, accounts payable and receivable"
+   },
+   "21": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 12114.338699961081,
+    "query": "inside sales and business development for B2B clients"
+   },
+   "22": {
+    "recall@10": 0.7,
+    "mrr": 1.0,
+    "ndcg@10": 0.772837825180752,
+    "ms": 9632.621200056747,
+    "query": "run digital marketing campaigns and SEO"
+   },
+   "23": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.9363792118010483,
+    "ms": 19311.018999898806,
+    "query": "recruiting and talent acquisition"
+   },
+   "24": {
+    "recall@10": 0.7,
+    "mrr": 1.0,
+    "ndcg@10": 0.7702043899253147,
+    "ms": 5995.966500137001,
+    "query": "help customers over phone and chat"
+   },
+   "25": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1719.2538001108915,
+    "query": "supply chain, procurement and logistics coordination"
+   },
+   "26": {
+    "recall@10": 0.6,
+    "mrr": 1.0,
+    "ndcg@10": 0.6722390270733757,
+    "ms": 1584.6891000401229,
+    "query": "administrative and office support"
+   },
+   "27": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.933745776545611,
+    "ms": 1597.3104999866337,
+    "query": "teach students in a classroom"
+   },
+   "28": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1388.4709000121802,
+    "query": "work in a pharmacy"
+   },
+   "29": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1429.4094000943005,
+    "query": "drive trucks or make deliveries"
+   },
+   "30": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1352.0400000270456,
+    "query": "warehouse and forklift work"
+   },
+   "31": {
+    "recall@10": 0.6,
+    "mrr": 1.0,
+    "ndcg@10": 0.6431211415940209,
+    "ms": 1388.9407000970095,
+    "query": "mechanical engineering and product design"
+   },
+   "32": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1368.3013000991195,
+    "query": "electrical or electronics engineering"
+   },
+   "33": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1359.122899826616,
+    "query": "civil engineering and construction projects"
+   },
+   "34": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.933745776545611,
+    "ms": 29054.931600112468,
+    "query": "manage a retail store"
+   },
+   "35": {
+    "recall@10": 0.6,
+    "mrr": 1.0,
+    "ndcg@10": 0.7034066032439746,
+    "ms": 47109.761599916965,
+    "query": "restaurant and hospitality work"
+   },
+   "36": {
+    "recall@10": 0.9,
+    "mrr": 1.0,
+    "ndcg@10": 0.933745776545611,
+    "ms": 4823.756100144237,
+    "query": "legal work at a law firm"
+   },
+   "37": {
+    "recall@10": 0.7,
+    "mrr": 1.0,
+    "ndcg@10": 0.7819835854675755,
+    "ms": 5166.968799894676,
+    "query": "real estate and property management"
+   },
+   "38": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 16852.276799967512,
+    "query": "insurance underwriting and claims"
+   },
+   "39": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 27881.290100049227,
+    "query": "banking, loans and mortgage"
+   },
+   "40": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1550.9122000075877,
+    "query": "equipment maintenance technician"
+   },
+   "41": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1299.0183997899294,
+    "query": "laboratory and scientific research"
+   },
+   "42": {
+    "recall@10": 0.7,
+    "mrr": 1.0,
+    "ndcg@10": 0.7529694065526482,
+    "ms": 1344.2172999493778,
+    "query": "data entry and clerical work"
+   },
+   "43": {
+    "recall@10": 1.0,
+    "mrr": 1.0,
+    "ndcg@10": 1.0,
+    "ms": 1331.112700048834,
     "query": "write and edit content"
    }
   }
@@ -939,6 +1248,6 @@
  "_meta": {
   "suite": "retrieval",
   "tag": "current",
-  "at": "2026-11-18T17:03:41+00:00"
+  "at": "2026-11-18T17:33:47+00:00"
  }
 }

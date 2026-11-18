@@ -1,5 +1,6 @@
 """Structured-output eval: resume PDF -> ProfileSchema on 15 synthetic resumes with known truth."""
 
+import asyncio
 import re
 
 from app.errors import AppError
@@ -59,7 +60,15 @@ async def run(llm, n: int = 15, system: str | None = None) -> dict:
         text = extract_pdf_text(pdf)
         stats: dict = {}
         try:
-            profile = await parse_resume(llm, text, stats=stats, system=system)
+            profile = None
+            for infra_try in range(6):  # provider outages are infrastructure, not model quality
+                try:
+                    profile = await parse_resume(llm, text, stats=stats, system=system)
+                    break
+                except AppError as exc:
+                    if exc.code != "llm_unavailable" or infra_try == 5:
+                        raise
+                    await asyncio.sleep(30)
         except AppError:
             rows.append({"resume": truth.path, "valid": False, "attempts": stats.get("attempts", 0)})
             continue

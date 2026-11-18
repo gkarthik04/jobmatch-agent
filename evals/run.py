@@ -148,6 +148,7 @@ async def main() -> None:
     # RRF order / heuristic explanations) so rate-limit queueing cannot silently change results.
     get_settings().rerank_budget_s = 900.0
     get_settings().explain_budget_s = 900.0
+    get_settings().llm_max_wait_s = 120.0  # ride out provider 503 spikes instead of failing
     embedder, llm = make_embedder(), get_llm()
     suites = [a.only] if a.only else ["retrieval", "structured", "agent", "judge"]
     for suite in suites:

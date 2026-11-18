@@ -137,7 +137,8 @@ class GeminiLLM:
     ) -> LLMResult:
         start = time.perf_counter()
         last_exc: BaseException | None = None
-        for attempt_pass in range(2):
+        max_wait = get_settings().llm_max_wait_s
+        for attempt_pass in range(3):
             tried = False
             for model in self.models:
                 if self._parked.get(model, 0) > time.monotonic():
@@ -167,7 +168,7 @@ class GeminiLLM:
                 return self._to_result(res, model, schema, start)
             if not tried:  # everything parked: wait briefly if a per-minute limit frees up soon
                 soonest = min(self._parked.values(), default=0) - time.monotonic()
-                if soonest > 20 or attempt_pass == 1:
+                if soonest > max_wait or attempt_pass == 2:
                     break
                 await asyncio.sleep(max(soonest, 1))
         raise LLMUnavailable(f"all models unavailable: {last_exc}")
