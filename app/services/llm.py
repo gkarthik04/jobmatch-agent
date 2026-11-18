@@ -15,6 +15,7 @@ from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait
 from app.config import get_settings
 from app.models import LLMCache
 from app.services.embeddings import _retryable
+from app.services.throttle import AsyncWindow
 
 log = logging.getLogger("app.llm")
 
@@ -55,6 +56,7 @@ class GeminiLLM:
         s = get_settings()
         self.model, self.timeout = s.chat_model, s.llm_timeout_s
         self.client = genai.Client(api_key=s.gemini_api_key)
+        self._window = AsyncWindow(s.llm_rpm)
 
     async def generate(
         self,
@@ -89,6 +91,7 @@ class GeminiLLM:
             reraise=True,
         ):
             with attempt:
+                await self._window.acquire()
                 res = await asyncio.wait_for(
                     self.client.aio.models.generate_content(
                         model=self.model, contents=contents, config=config

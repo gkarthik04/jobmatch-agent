@@ -21,6 +21,7 @@ class SearchFilters:
     remote: bool | None = None
     posted_within_days: int | None = None  # relative to the newest posting in the index
     exclude_ids: list[int] = field(default_factory=list)
+    id_range: tuple[int, int] | None = None  # inclusive; used by evals to freeze an index snapshot
 
 
 @dataclass
@@ -71,6 +72,9 @@ def build_filters(f: SearchFilters) -> tuple[str, dict]:
             "posted_at >= (SELECT max(posted_at) FROM jobs) - make_interval(days => :days)"
         )
         params["days"] = int(f.posted_within_days)
+    if f.id_range:
+        clauses.append("id BETWEEN :id_lo AND :id_hi")
+        params["id_lo"], params["id_hi"] = f.id_range
     if f.exclude_ids:
         clauses.append("id <> ALL(:excl)")
         params["excl"] = list(f.exclude_ids)

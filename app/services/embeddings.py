@@ -1,10 +1,8 @@
 """Gemini embeddings with batching, retry/backoff, normalisation and a DB-backed cache."""
 
-import asyncio
 import hashlib
 import logging
 import math
-import time
 from typing import Protocol
 
 from sqlalchemy import select
@@ -13,6 +11,7 @@ from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait
 
 from app.config import get_settings
 from app.models import EmbeddingCache
+from app.services.throttle import AsyncWindow
 
 log = logging.getLogger("app.embeddings")
 
@@ -46,17 +45,11 @@ class GeminiEmbedder:
         self.model, self.dim = s.embed_model, s.embed_dim
         self.client = genai.Client(api_key=s.gemini_api_key)
         self.batch_size, self.items_per_minute = batch_size, items_per_minute
-        self._sent: list[tuple[float, int]] = []  # (monotonic time, n items) in the last minute
+        self._window = AsyncWindow(items_per_minute)
 
     async def _throttle(self, n: int) -> None:
         """Free tier counts every text in a batch as a request: 100/min. Stay under with a window."""
-        while True:
-            now = time.monotonic()
-            self._sent = [(t, k) for t, k in self._sent if now - t < 60]
-            if sum(k for _, k in self._sent) + n <= self.items_per_minute or not self._sent:
-                self._sent.append((now, n))
-                return
-            await asyncio.sleep(max(0.5, 60 - (now - self._sent[0][0]) + 0.1))
+        await self._window.acquire(n)
 
     async def _one_batch(self, batch: list[str], task: str) -> list[list[float]]:
         from google.genai import types
