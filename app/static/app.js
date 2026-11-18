@@ -192,7 +192,7 @@
       view.innerHTML = `
         <div class="card" style="margin-top:var(--s-300)">
           <div style="display:flex;justify-content:space-between;gap:var(--s-200);flex-wrap:wrap;align-items:flex-start">
-            <div><h2 class="heading-5">${esc(p.name)}</h2><p class="caption-2 muted">${esc(p.experience_years)} years of experience</p></div>
+            <div><h2 class="heading-5">${esc(p.name)}</h2><p class="caption-2 muted">${esc(+(+p.experience_years).toFixed(1))} years of experience</p></div>
             <button class="btn btn-primary button-md" type="button" data-tab="matches"><i class="ph ph-arrow-right" aria-hidden="true"></i>Find my matches</button>
           </div>
           <div class="profile-grid">

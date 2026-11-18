@@ -167,7 +167,7 @@
     const p = personas[0];
     $("#sceneSkills").innerHTML = p.skills.map((s, k) => `<span class="chip have caption-4" style="--k:${k}">${esc(s)}</span>`).join("") + `<span class="chip caption-4" style="--k:${p.skills.length}">${esc(p.role)}</span>`;
     $("#sceneYears").textContent = `${p.years} years of experience found. Target role: ${p.role}.`;
-    $("#sceneRes").innerHTML = p.results.slice(0, 3).map(matchRow).join("");
+    $("#sceneRes").innerHTML = p.results.slice(0, 2).map(matchRow).join("");
   }
   const steps = $$(".story-step"), scenes = $$(".scene");
   function setStep(i) { steps.forEach((s, k) => s.classList.toggle("on", k === i)); scenes.forEach((s, k) => s.classList.toggle("on", k === i)); }
