@@ -80,7 +80,7 @@ async def test_search_hybrid_and_filters(client, seed_jobs):
     body = r.json()
     top = body["results"][0]
     assert top["title"] == "Zyxwvu Backend Engineer"
-    assert set(top["ranks"]) == {"vector", "fts"}  # both retrievers contributed
+    assert {"vector", "fts"} <= set(top["ranks"])  # both retrievers contributed
     rem = (await client.get("/search", params={"q": "zyxwvu", "remote": True})).json()["results"]
     assert rem and all(x["remote"] for x in rem)
     loc = (await client.get("/search", params={"q": "zyxwvu", "location": "austin"})).json()["results"]

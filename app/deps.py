@@ -2,13 +2,13 @@
 
 from functools import lru_cache
 
-from app.services.embeddings import Embedder, GeminiEmbedder
+from app.services.embeddings import Embedder, make_embedder
 from app.services.llm import LLM, get_llm
 
 
 @lru_cache
 def _embedder() -> Embedder:
-    return GeminiEmbedder()
+    return make_embedder()
 
 
 def get_embedder() -> Embedder:

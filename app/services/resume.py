@@ -15,7 +15,7 @@ MAX_PAGES = 6
 MAX_CHARS = 12_000
 MAX_ATTEMPTS = 3
 
-SYSTEM = (
+SYSTEM_V1 = (
     "You extract structured data from resumes. Return ONLY JSON matching the schema. "
     "Rules: skills are short canonical names (e.g. 'Python', 'PostgreSQL'), deduplicated, max 40. "
     "experience_years is total professional experience as a number (internships count half; "
@@ -25,6 +25,18 @@ SYSTEM = (
     "resume if no objective is stated). preferred_locations: locations stated or implied by "
     "the resume, [] if none. Do not invent facts that are not supported by the resume."
 )
+
+
+# v2 (measured in evals/RESULTS.md): same rules, plus an explicit month-by-month procedure for
+# experience_years, the field v1 got wrong most often.
+SYSTEM_V2 = SYSTEM_V1 + (
+    " experience_years procedure: for every job/internship take (end date - start date) in months "
+    "from the DATES (if a stated duration contradicts the dates, trust the dates); full-time roles "
+    "count 1x, internships/trainee roles count 0.5x; never count projects or education; do not "
+    "double count overlapping periods; sum the months, divide by 12, round to 1 decimal."
+)
+PROMPTS = {"v1": SYSTEM_V1, "v2": SYSTEM_V2}
+SYSTEM = SYSTEM_V2
 
 
 def extract_pdf_text(data: bytes) -> str:
@@ -48,7 +60,9 @@ def extract_pdf_text(data: bytes) -> str:
     return text[:MAX_CHARS]
 
 
-async def parse_resume(llm, text: str) -> ProfileSchema:
+async def parse_resume(
+    llm, text: str, stats: dict | None = None, system: str | None = None
+) -> ProfileSchema:
     """Ask the LLM for JSON, validate with Pydantic; on failure feed the error back and retry."""
     prompt = f"Resume text:\n\"\"\"\n{text}\n\"\"\""
     last_error = ""
@@ -60,17 +74,21 @@ async def parse_resume(llm, text: str) -> ProfileSchema:
                 f"only:\n{last_error}"
             )
         try:
-            res = await llm.generate(contents, system=SYSTEM, schema=ProfileSchema)
+            res = await llm.generate(contents, system=system or SYSTEM, schema=ProfileSchema)
             profile = ProfileSchema.model_validate_json(res.text)
             if not 0 <= profile.experience_years <= 60:
                 raise ValueError("experience_years must be between 0 and 60")
             if not profile.name.strip() or not profile.skills:
                 raise ValueError("name and at least one skill are required")
             profile.skills = list(dict.fromkeys(s.strip() for s in profile.skills if s.strip()))[:40]
+            if stats is not None:
+                stats["attempts"] = attempt
             return profile
         except (ValidationError, ValueError) as exc:
             last_error = str(exc)[:800]
             log.warning("resume parse invalid", extra={"attempt": attempt, "error": last_error})
+    if stats is not None:
+        stats["attempts"] = MAX_ATTEMPTS
     raise AppError(
         422, "resume_parse_failed", "Could not extract a valid profile from this resume",
         details={"last_error": last_error},

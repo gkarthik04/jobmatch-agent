@@ -8,9 +8,17 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql://postgres:postgres@localhost:5432/jobmatch"
     gemini_api_key: str = ""
-    chat_model: str = "gemini-2.5-flash"
-    embed_model: str = "gemini-embedding-001"
-    embed_dim: int = 768
+    chat_model: str = "gemini-3.1-flash-lite"
+    # ordered fallback chain (comma separated). Free-tier quotas are per model, so we spill over.
+    chat_models: str = (
+        "gemini-3.1-flash-lite,gemini-3.5-flash-lite,gemini-flash-lite-latest,"
+        "gemini-3-flash-preview,gemini-2.5-flash"
+    )
+    # Embeddings: "local" (fastembed/ONNX, free + unlimited) or "gemini" (1,000 texts/day on the
+    # free tier, which cannot index thousands of postings). dim must match the provider's model.
+    embed_provider: str = "local"
+    embed_model: str = "BAAI/bge-small-en-v1.5"
+    embed_dim: int = 384
 
     jwt_secret: str = "dev-only-change-me"
     jwt_expire_minutes: int = 60 * 24
@@ -29,6 +37,20 @@ class Settings(BaseSettings):
     # search
     rerank_top_n: int = 50
     rrf_k: int = 60
+    # weighted RRF weights: vector, full-text (body), title-field full-text. Chosen on DEV queries
+    # in evals/fusion_experiment.py; "1,1,0" reproduces the original equal-weight 2-way hybrid.
+    rrf_weights: str = "1,0.5,0.5"
+
+    @property
+    def rrf_weight_map(self) -> dict[str, float]:
+        v, f, t = (float(x) for x in self.rrf_weights.split(","))
+        return {"vector": v, "fts": f, "title": t}
+
+
+    @property
+    def chat_model_chain(self) -> list[str]:
+        chain = [m.strip() for m in self.chat_models.split(",") if m.strip()]
+        return chain or [self.chat_model]
 
 
 @lru_cache

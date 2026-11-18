@@ -1,5 +1,6 @@
 """Gemini embeddings with batching, retry/backoff, normalisation and a DB-backed cache."""
 
+import asyncio
 import hashlib
 import logging
 import math
@@ -77,6 +78,30 @@ class GeminiEmbedder:
         for i in range(0, len(texts), self.batch_size):
             out.extend(await self._one_batch(texts[i : i + self.batch_size], task))
         return out
+
+
+class LocalEmbedder:
+    """fastembed (ONNX runtime, no torch): BAAI/bge-small-en-v1.5, 384-d, ~70MB, CPU only."""
+
+    QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
+
+    def __init__(self):
+        from fastembed import TextEmbedding
+
+        s = get_settings()
+        self.model = TextEmbedding(model_name=s.embed_model)
+
+    def _embed_sync(self, texts: list[str]) -> list[list[float]]:
+        return [normalize([float(x) for x in v]) for v in self.model.embed(texts, batch_size=32)]
+
+    async def embed(self, texts: list[str], task: str = DOC) -> list[list[float]]:
+        if task == QUERY:
+            texts = [self.QUERY_PREFIX + t for t in texts]
+        return await asyncio.to_thread(self._embed_sync, texts)
+
+
+def make_embedder() -> Embedder:
+    return GeminiEmbedder() if get_settings().embed_provider == "gemini" else LocalEmbedder()
 
 
 def cache_key(model: str, task: str, text: str) -> str:

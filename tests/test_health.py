@@ -26,4 +26,4 @@ def test_normalize_neon_url():
     )
     assert url.startswith("postgresql+asyncpg://u:p@ep-x.neon.tech/db")
     assert "sslmode" not in url and "channel_binding" not in url
-    assert args == {"ssl": "require"}
+    assert args["ssl"] == "require" and args["statement_cache_size"] == 0

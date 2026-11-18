@@ -14,3 +14,4 @@ bcrypt>=4.1
 pyjwt>=2.8
 tenacity>=8.3
 numpy>=1.26
+fastembed>=0.4

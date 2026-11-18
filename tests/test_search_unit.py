@@ -51,3 +51,19 @@ def test_apply_scores_orders_and_keeps_rrf_for_ties_and_missing():
     hits = [_hit(1), _hit(2), _hit(3), _hit(4)]
     out = apply_scores(hits, {2: 9.0, 3: 5.0, 4: 5.0})  # 1 unscored
     assert [h.job.id for h in out] == [2, 3, 4, 1]
+
+
+def test_weighted_rrf_downweights_a_noisy_retriever():
+    rankings = {"vector": [1, 2, 3], "fts": [3, 2, 1]}
+    plain = [i for i, _ in rrf_fuse(rankings)]
+    weighted = [i for i, _ in rrf_fuse(rankings, weights={"vector": 1.0, "fts": 0.25})]
+    assert weighted[0] == 1  # vector's favourite wins once fts is down-weighted
+    assert plain != weighted or plain[0] == 1
+    (_, s1), = rrf_fuse({"a": [9]}, weights={"a": 0.5})
+    assert abs(s1 - 0.5 / 61) < 1e-12
+
+
+def test_default_weight_map_parses():
+    from app.config import Settings
+
+    assert Settings(rrf_weights="1,0.5,0.5").rrf_weight_map == {"vector": 1.0, "fts": 0.5, "title": 0.5}

@@ -148,7 +148,7 @@ async def upsert_jobs(session: AsyncSession, feed: list[CleanJob], add_new: int)
     return stats
 
 
-async def embed_pending(session: AsyncSession, embedder: Embedder, chunk: int = 100) -> int:
+async def embed_pending(session: AsyncSession, embedder: Embedder, chunk: int = 64) -> int:
     """Embed rows whose embedding is NULL. Commits per chunk, so it is resumable."""
     model = get_settings().embed_model
     total = 0

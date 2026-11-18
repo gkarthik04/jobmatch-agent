@@ -8,7 +8,6 @@ from app.deps import get_embedder, get_llm_dep
 from app.errors import AppError
 from app.models import Feedback, Job, Profile, SavedJob, User
 from app.ratelimit import rate_limit
-from app.schemas import JobOut
 from app.security import current_user
 from app.services.matching import MatchOut, get_matches
 from app.services.preferences import preference_delta
@@ -83,8 +82,8 @@ async def feedback(
     return {"ok": True, "feedback_count": n}
 
 
-class SavedOut(BaseModel):
-    job: JobOut
+class SavedIn(BaseModel):
+    job_id: int
 
 
 @router.get("/saved")
@@ -100,3 +99,34 @@ async def saved(user: User = Depends(current_user), session: AsyncSession = Depe
     from app.schemas import job_out
 
     return [job_out(SimpleNamespace(job=j, score=0.0, ranks={}, rerank_score=None)) for j in rows]
+
+
+@router.post("/saved", status_code=201)
+async def save(
+    body: SavedIn,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
+
+    if await session.get(Job, body.job_id) is None:
+        raise AppError(404, "job_not_found", "No such job")
+    await session.execute(
+        pg_insert(SavedJob).values(user_id=user.id, job_id=body.job_id).on_conflict_do_nothing()
+    )
+    await session.commit()
+    return {"ok": True}
+
+
+@router.delete("/saved/{job_id}", status_code=204)
+async def unsave(
+    job_id: int,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    from sqlalchemy import delete
+
+    await session.execute(
+        delete(SavedJob).where(SavedJob.user_id == user.id, SavedJob.job_id == job_id)
+    )
+    await session.commit()

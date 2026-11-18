@@ -27,7 +27,8 @@ def normalize_url(url: str) -> tuple[str, dict]:
     if scheme in ("postgres", "postgresql"):
         scheme = "postgresql+asyncpg"
     query = dict(parse_qsl(parts.query))
-    connect_args: dict = {}
+    # Neon's pooler (PgBouncer) breaks asyncpg's prepared-statement cache after schema changes
+    connect_args: dict = {"statement_cache_size": 0, "prepared_statement_cache_size": 0}
     sslmode = query.pop("sslmode", None)
     ssl = query.pop("ssl", None)
     query.pop("channel_binding", None)

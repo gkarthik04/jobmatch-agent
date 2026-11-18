@@ -49,12 +49,18 @@ def build_or_tsquery(text_: str, max_terms: int = 30) -> str:
     return " | ".join(seen[:max_terms])
 
 
-def rrf_fuse(rankings: dict[str, list[int]], k: int = 60) -> list[tuple[int, float]]:
-    """Reciprocal Rank Fusion: score(d) = sum_r 1 / (k + rank_r(d)). Returns [(id, score)] desc."""
+def rrf_fuse(
+    rankings: dict[str, list[int]], k: int = 60, weights: dict[str, float] | None = None
+) -> list[tuple[int, float]]:
+    """(Weighted) Reciprocal Rank Fusion: score(d) = sum_r w_r / (k + rank_r(d)).
+
+    Returns [(id, score)] sorted desc. Missing weights default to 1.0 (plain RRF).
+    """
     scores: dict[int, float] = {}
-    for ids in rankings.values():
+    for name, ids in rankings.items():
+        w = 1.0 if weights is None else weights.get(name, 1.0)
         for rank, _id in enumerate(ids, start=1):
-            scores[_id] = scores.get(_id, 0.0) + 1.0 / (k + rank)
+            scores[_id] = scores.get(_id, 0.0) + w / (k + rank)
     return sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))
 
 
@@ -113,6 +119,22 @@ async def fts_ids(session: AsyncSession, query: str, f: SearchFilters, n: int) -
     return [r[0] for r in rows]
 
 
+async def title_ids(session: AsyncSession, query: str, f: SearchFilters, n: int) -> list[int]:
+    """Full-text match against the title only (strongest single signal for job search)."""
+    tsq = build_or_tsquery(query)
+    if not tsq:
+        return []
+    where, params = build_filters(f)
+    rows = await session.execute(
+        text(
+            "SELECT id FROM jobs, to_tsquery('english', :tsq) q "
+            f"WHERE title_tsv @@ q{where} ORDER BY ts_rank_cd(title_tsv, q, 32) DESC, id LIMIT :n"
+        ),
+        {**params, "tsq": tsq, "n": n},
+    )
+    return [r[0] for r in rows]
+
+
 async def search(
     session: AsyncSession,
     embedder: Embedder,
@@ -135,8 +157,11 @@ async def search(
         rankings["vector"] = await vector_ids(session, qvec, f, POOL)
     if mode in ("fts", "hybrid", "hybrid_rerank"):
         rankings["fts"] = await fts_ids(session, query, f, POOL)
+    weights = s.rrf_weight_map
+    if mode in ("hybrid", "hybrid_rerank") and weights["title"] > 0:
+        rankings["title"] = await title_ids(session, query, f, POOL)
 
-    fused = rrf_fuse(rankings, k=s.rrf_k)
+    fused = rrf_fuse(rankings, k=s.rrf_k, weights=weights if mode in ("hybrid", "hybrid_rerank") else None)
     pool = fused[: s.rerank_top_n if mode == "hybrid_rerank" else limit]
     ids = [i for i, _ in pool]
     if not ids:

@@ -32,7 +32,7 @@ def fetch() -> None:
 
 async def ingest(add: int, no_embed: bool) -> None:
     from app.services import ingest as ing
-    from app.services.embeddings import GeminiEmbedder
+    from app.services.embeddings import make_embedder
 
     feed = ing.load_feed()
     print(f"feed: {len(feed)} clean postings")
@@ -40,7 +40,7 @@ async def ingest(add: int, no_embed: bool) -> None:
         stats = await ing.upsert_jobs(session, feed, add_new=add)
         print(f"upsert: {stats}")
         if not no_embed:
-            stats.embedded = await ing.embed_pending(session, GeminiEmbedder())
+            stats.embedded = await ing.embed_pending(session, make_embedder())
             print(f"embedded {stats.embedded} rows")
             await ing.analyze(session)
     await dispose_engine()
