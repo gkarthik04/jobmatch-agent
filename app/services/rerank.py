@@ -5,11 +5,13 @@ fit Render's free 512MB RAM. Pointwise scores in a single JSON-schema call keep 
 Results are cached by (query, candidate ids), and any failure falls back to the RRF order.
 """
 
+import asyncio
 import logging
 
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.services.llm import cached_json, get_llm, prompt_key
 from app.services.search import Hit
 
@@ -61,7 +63,9 @@ async def rerank(session: AsyncSession, llm, query: str, hits: list[Hit]) -> lis
         return RerankOut.model_validate_json(res.text).model_dump()
 
     try:
-        data = await cached_json(session, key, produce)
+        data = await asyncio.wait_for(
+            cached_json(session, key, produce), get_settings().rerank_budget_s
+        )
         scores = {s["id"]: s["score"] for s in data["scores"]}
     except Exception:  # noqa: BLE001 - reranking is an enhancement; never fail the search
         log.warning("rerank failed, falling back to RRF order", exc_info=True)

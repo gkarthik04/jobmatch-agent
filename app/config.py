@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     agent_max_steps: int = 6
     tool_timeout_s: float = 20.0
     llm_timeout_s: float = 45.0
+    # hard latency budgets for optional LLM enhancements: on timeout we degrade, never hang
+    rerank_budget_s: float = 20.0
+    explain_budget_s: float = 25.0
     llm_rpm: int = 9  # Gemini Flash free tier is ~10 requests/min; stay just under it
 
     # search

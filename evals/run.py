@@ -142,6 +142,12 @@ async def main() -> None:
         render()
         return
     setup_logging("WARNING")
+    from app.config import get_settings
+
+    # Evals measure the full LLM path: lift the production latency budgets (which degrade to
+    # RRF order / heuristic explanations) so rate-limit queueing cannot silently change results.
+    get_settings().rerank_budget_s = 900.0
+    get_settings().explain_budget_s = 900.0
     embedder, llm = make_embedder(), get_llm()
     suites = [a.only] if a.only else ["retrieval", "structured", "agent", "judge"]
     for suite in suites:

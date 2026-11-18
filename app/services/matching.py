@@ -1,11 +1,13 @@
 """Profile -> ranked matches with structured, grounded explanations."""
 
+import asyncio
 import logging
 
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.models import Feedback, Job, Profile
 from app.schemas import JobOut, ProfileSchema, job_out
 from app.services.embeddings import QUERY, embed_cached
@@ -105,7 +107,10 @@ async def explain_matches(
 
     key = prompt_key("explain-v1", profile.model_dump(), [h.job.id for h in hits])
     try:
-        by_id = {i["job_id"]: i for i in (await cached_json(session, key, produce))["items"]}
+        data = await asyncio.wait_for(
+            cached_json(session, key, produce), get_settings().explain_budget_s
+        )
+        by_id = {i["job_id"]: i for i in data["items"]}
     except Exception:  # noqa: BLE001 - explanations degrade gracefully, ranking still returned
         log.warning("explanation failed, using heuristic", exc_info=True)
         by_id = {}

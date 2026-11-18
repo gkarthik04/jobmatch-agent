@@ -37,7 +37,9 @@ class Turn:
     expect_tool_failure: bool = False
 
 
-# matchers: literal | ("pos", n) job id at position n of previous results | ("has", substr) | ("fixed", id)
+# matchers: literal | ("pos", n) job id at position n of the results the agent was looking at
+# (previous turn's, or this turn's own search when it searches first) | ("has", substr) |
+# ("any", [substr, ...]) | ("fixed", id)
 CONVERSATIONS: list[tuple[str, list[Turn]]] = [
     ("basic search", [Turn("Find python backend developer jobs", ["search_jobs"],
                            [("search_jobs", {"query": ("has", "python")})])]),
@@ -80,7 +82,7 @@ CONVERSATIONS: list[tuple[str, list[Turn]]] = [
              [("save_job", {"job_id": ("pos", 1)}), ("save_job", {"job_id": ("pos", 2)})])]),
     ("refine location", [
         Turn("Find nurse or healthcare jobs", ["search_jobs"]),
-        Turn("now only in Texas", ["search_jobs"], [("search_jobs", {"location": ("has", "tx")})])]),
+        Turn("now only in Texas", ["search_jobs"], [("search_jobs", {"location": ("any", ["tx", "texas"])})])]),
     ("compare by explicit id", [Turn("compare job {JOB_ID} with my resume", ["compare_resume_to_job"],
                                      [("compare_resume_to_job", {"job_id": ("fixed", "{JOB_ID}")})])]),
 ]
@@ -93,6 +95,8 @@ def _match(actual, expected, prev_results: list[int], job_id: int) -> bool:
             return len(prev_results) >= val and actual == prev_results[val - 1]
         if kind == "has":
             return actual is not None and str(val).lower() in str(actual).lower()
+        if kind == "any":
+            return actual is not None and any(v in str(actual).lower() for v in val)
         if kind == "fixed":
             return actual == (job_id if val == "{JOB_ID}" else val)
     return actual == expected
@@ -137,6 +141,8 @@ async def run(embedder, llm, n: int | None = None) -> dict:
                 r = await run_agent(ctx, say)
             calls = r.tool_calls
             names = [c.name for c in calls]
+            if "search_jobs" in names:  # same-turn dependency: "the top one" = this turn's own results
+                prev = await _prev_results(uid)
             if t.no_tools:
                 tools_ok = not names
             else:

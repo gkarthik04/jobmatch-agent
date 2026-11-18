@@ -1,0 +1,431 @@
+{
+ "n_conversations": 15,
+ "n_turns": 23,
+ "conversations_passed": 0.8666666666666667,
+ "tool_selection": 1.0,
+ "argument_accuracy": 0.9130434782608695,
+ "task_completion": 1.0,
+ "within_step_limit": 1.0,
+ "mean_llm_calls_per_turn": 2.0,
+ "mean_latency_ms": 15096.507826020294,
+ "mean_tokens_per_turn": 1970.7391304347825,
+ "conversations": [
+  {
+   "name": "basic search",
+   "turns": [
+    {
+     "say": "Find python backend developer jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 11493.453999981284,
+     "tokens": 1934,
+     "reply": "I searched for \"python backend developer\" jobs in Austin, TX, but the current results do not match your specific skill set.\n\n1. backend Java developer - TekisHu"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "remote filter",
+   "turns": [
+    {
+     "say": "Show me remote data analyst jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 12697.097099618986,
+     "tokens": 1902,
+     "reply": "Here are the remote data analyst jobs found in the live index:\n\n1. Data Analyst - nan (Etna, OH) [5881]\n2. eCommerce Data Analyst - Radiant Systems Inc (United "
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "follow-up: only remote",
+   "turns": [
+    {
+     "say": "Find data analyst jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 16056.343899806961,
+     "tokens": 1925,
+     "reply": "Here are the data analyst positions I found:\n\n1. Data Engineering Analyst - Horizontal Talent (Denver, CO) [7355]\n2. Data Analyst - nan (Etna, OH - Remote) [588"
+    },
+    {
+     "say": "only remote ones",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 9805.740399984643,
+     "tokens": 2291,
+     "reply": "Here are the remote data analyst positions:\n\n1. Data Analyst - nan (Etna, OH - Remote) [5881]\n2. eCommerce Data Analyst - Radiant Systems Inc (United States - R"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "follow-up: compare 2nd with resume",
+   "turns": [
+    {
+     "say": "Find software engineer jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 17370.088999858126,
+     "tokens": 2023,
+     "reply": "Here are some software engineer jobs I found:\n\n1. Associate Software Engineer/Software Engineer-AITS - University of Illinois Urbana-Champaign (Urbana, IL) [674"
+    },
+    {
+     "say": "compare the 2nd one with my resume",
+     "tools_called": [
+      "compare_resume_to_job"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 14827.393300365657,
+     "tokens": 2113,
+     "reply": "The fit score for the \"Applications Dev & Test - Software Development Engineer 4\" position is 9/100.\n\nYou have a match for **Docker**, but you are missing sever"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "follow-up: save first",
+   "turns": [
+    {
+     "say": "Find devops engineer jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 30097.140399971977,
+     "tokens": 1946,
+     "reply": "I found these DevOps Engineer positions:\n\n1. DevOps Engineer(10+Years) - Vivaswan Software Technologies (United States) [7545]\n2. DevOps Engineer - Rainsoftglob"
+    },
+    {
+     "say": "save the first one",
+     "tools_called": [
+      "save_job"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 8085.968600120395,
+     "tokens": 1861,
+     "reply": "I have saved the job \"DevOps Engineer(10+Years) - Vivaswan Software Technologies\" to your list."
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "follow-up: details of 3rd",
+   "turns": [
+    {
+     "say": "Find customer service jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 19018.804399995133,
+     "tokens": 1878,
+     "reply": "I found the following customer service jobs:\n\n1. Customer Service Rep - CCLO - Customer Service - Griffith Foods (Lombard, IL) [7001]\n2. Customer Service Repres"
+    },
+    {
+     "say": "give me the details of the third job",
+     "tools_called": [
+      "get_job_details"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 20357.012999942526,
+     "tokens": 2440,
+     "reply": "**Customer Service Associate (140208)** - Atrium (New York, NY / Remote) [9855]\n\n* **Salary/Hourly Rate:** $20 \u2013 $22/hr DOE\n* **Experience Level:** Entry level\n"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "save then list saved",
+   "turns": [
+    {
+     "say": "Find accountant jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 15558.193799806759,
+     "tokens": 1862,
+     "reply": "Here are the accountant positions found in the live job index:\n\n1. Finance Manager - Finance Operations Accounting, Finance Operations - Accounting - Amazon (Ar"
+    },
+    {
+     "say": "save the second one",
+     "tools_called": [
+      "save_job"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 8980.668499832973,
+     "tokens": 1939,
+     "reply": "I have successfully saved **Accounting Clerk - Notre Dame Schools (Chardon, OH)** [5072] to your saved jobs list. Let me know if you would like to search for ot"
+    },
+    {
+     "say": "what jobs have I saved?",
+     "tools_called": [
+      "list_saved_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 2714.0769998077303,
+     "tokens": 2046,
+     "reply": "Here are the jobs you currently have saved:\n\n1. Accounting Clerk - Notre Dame Schools (Chardon, OH) [5072]"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "location filter",
+   "turns": [
+    {
+     "say": "Find sales jobs in Chicago",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 13166.589900385588,
+     "tokens": 1867,
+     "reply": "I found the following sales jobs in Chicago:\n\n1. Entry-level Outside IT Sales Representative - OUS365 (Chicago, IL) [9921]\n2. Event Sales Assistant - Be Marketa"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "recency filter",
+   "turns": [
+    {
+     "say": "software engineer jobs posted in the last 7 days",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 10923.216699622571,
+     "tokens": 1903,
+     "reply": "I found these software engineer-related jobs in Austin posted in the last 7 days:\n\n1. Sr Data Engineer with Kafka - ZenithMinds Inc (Austin, TX) [5629]\n2. Lead "
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "unknown job id recovers gracefully",
+   "turns": [
+    {
+     "say": "show me the details of job 99999999",
+     "tools_called": [
+      "get_job_details"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 13643.43860000372,
+     "tokens": 1555,
+     "reply": "I'm sorry, but I couldn't find a job with the ID 99999999. Please double-check the ID or let me know if you'd like me to search for new jobs instead."
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "chit-chat needs no tools",
+   "turns": [
+    {
+     "say": "hi! what can you help me with?",
+     "tools_called": [],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 1,
+     "latency_ms": 4747.264000121504,
+     "tokens": 827,
+     "reply": "I can help you find and evaluate job opportunities tailored to your profile. Specifically, I can:\n\n*   **Search for jobs:** Find Backend Engineer or Data Analys"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "multi-step: search then compare",
+   "turns": [
+    {
+     "say": "Find data engineer jobs and tell me how my resume compares to the top one",
+     "tools_called": [
+      "search_jobs",
+      "compare_resume_to_job"
+     ],
+     "tools_ok": true,
+     "args_ok": false,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 3,
+     "latency_ms": 15626.618199516088,
+     "tokens": 3227,
+     "reply": "Here are the Data Engineer jobs found in Austin, TX:\n\n1. Sr Data Engineer with Kafka - ZenithMinds Inc (Austin, TX) [5629]\n2. Software Development Engineer, AWS"
+    }
+   ],
+   "passed": false
+  },
+  {
+   "name": "save two jobs",
+   "turns": [
+    {
+     "say": "Find marketing jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 21355.502400081605,
+     "tokens": 1891,
+     "reply": "Here are the marketing jobs found:\n\n1. Manager, Product Marketing - Thermo Fisher Scientific (New York, United States) [5846] (Remote)\n2. Product Marketing Asso"
+    },
+    {
+     "say": "save the first two",
+     "tools_called": [
+      "save_job",
+      "save_job"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 14492.879199795425,
+     "tokens": 1943,
+     "reply": "I have saved the first two jobs to your list:\n1. Manager, Product Marketing - Thermo Fisher Scientific [5846]\n2. Product Marketing Associate - Be Marketable [53"
+    }
+   ],
+   "passed": true
+  },
+  {
+   "name": "refine location",
+   "turns": [
+    {
+     "say": "Find nurse or healthcare jobs",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 25349.629800068215,
+     "tokens": 1925,
+     "reply": "Here are some nurse and healthcare jobs I found:\n\n1. Med-Surg Registered Nurse - MedPro Healthcare Staffing (Waverly, OH) [5210]\n2. REGISTERED NURSES (RN) - YAD"
+    },
+    {
+     "say": "now only in Texas",
+     "tools_called": [
+      "search_jobs"
+     ],
+     "tools_ok": true,
+     "args_ok": false,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 16664.531499845907,
+     "tokens": 2336,
+     "reply": "Here are the nurse and healthcare jobs in Texas:\n\n1. DRG Nurse Reviewer - Zelis (Texas, United States) [8302]\n2. Pharmacy Technician II - HCA Houston Healthcare"
+    }
+   ],
+   "passed": false
+  },
+  {
+   "name": "compare by explicit id",
+   "turns": [
+    {
+     "say": "compare job 5622 with my resume",
+     "tools_called": [
+      "compare_resume_to_job"
+     ],
+     "tools_ok": true,
+     "args_ok": true,
+     "completed": true,
+     "within_limit": true,
+     "llm_calls": 2,
+     "latency_ms": 24188.02629993297,
+     "tokens": 1693,
+     "reply": "Comparing job 5622 (Senior Data Engineer - ITP-A, Exempt) to your resume:\n\n- **Fit Score:** 21 / 100\n- **Matched Skills:** Python, SQL, PostgreSQL\n- **Missing S"
+    }
+   ],
+   "passed": true
+  }
+ ],
+ "_meta": {
+  "suite": "agent",
+  "tag": "current",
+  "at": "2026-11-18T17:12:18+00:00"
+ }
+}

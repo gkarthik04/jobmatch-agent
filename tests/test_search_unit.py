@@ -67,3 +67,19 @@ def test_default_weight_map_parses():
     from app.config import Settings
 
     assert Settings(rrf_weights="1,0.5,0.5").rrf_weight_map == {"vector": 1.0, "fts": 0.5, "title": 0.5}
+
+
+async def test_rerank_times_out_and_falls_back_to_rrf_order(monkeypatch):
+    import asyncio
+
+    from app.config import get_settings
+    from app.services import rerank as rr
+
+    async def hang(session, key, produce):
+        await asyncio.sleep(5)
+
+    monkeypatch.setattr(rr, "cached_json", hang)
+    monkeypatch.setattr(get_settings(), "rerank_budget_s", 0.05)
+    hits = [_hit(1), _hit(2), _hit(3)]
+    out = await rr.rerank(None, object(), "q", hits)
+    assert [h.job.id for h in out] == [1, 2, 3]  # untouched RRF order, no exception
