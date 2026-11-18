@@ -21,6 +21,7 @@ An AI career agent in miniature: **upload a resume → get personalised matches 
 3. **Matches** → the profile becomes a query; hybrid retrieval + LLM rerank returns the top 10, each with a *why it matches* explanation, matched / missing skills and a fit score. 👍/👎 updates a per-user preference vector (Rocchio) that changes future rankings.
 4. **Agent chat** → a hand-written plan → act → check loop over five tools (`search_jobs`, `get_job_details`, `compare_resume_to_job`, `save_job`, `list_saved_jobs`) with memory in Postgres, so follow-ups like *"only remote ones"* or *"compare the 2nd one with my resume"* work. The UI shows every tool call.
 5. **A changing index** → `python cli.py ingest` (also a scheduled GitHub Action) adds new postings and embeds only new or changed rows.
+6. **Apply links** → every job links to its original listing. Jobs from the live feed are marked **Open now** and have an **Apply** button; archived postings are marked **Archived** with their expiry date. An **Open positions only** filter works in search, matches and the agent (`open_only=true`).
 
 ## Architecture
 
@@ -235,6 +236,10 @@ python -m evals.run                                   # full eval suite -> evals
 
 ## Data
 
+**Two sources.** (1) An archive of ~5,000 LinkedIn postings from April 2024 (below). Their recorded expiry dates are all in 2024, so they are closed: they keep their original links for reference and are labelled *Archived*. (2) A **live feed** of currently open jobs from the [Arbeitnow](https://www.arbeitnow.com/) public API (free, no key, mostly Europe; English postings only, ~600 per refresh). `python cli.py ingest-live` (daily GitHub Action) upserts them with `last_seen_at`; a job that stops appearing in the feed counts as closed after 3 days. Live jobs show a *via Arbeitnow* credit and link to their Arbeitnow page, which leads to the employer's application. I could not find an explicit attribution rule in Arbeitnow's terms; check them before using this beyond a portfolio demo. Remotive's feed was evaluated and rejected: its terms forbid showing jobs behind a signup and its free tier returned only 16 jobs.
+
+**Archive details.**
+
 Postings come from the public Hugging Face dataset [`datastax/linkedin_job_listings`](https://huggingface.co/datasets/datastax/linkedin_job_listings) (real LinkedIn postings, Apr 2024, with full descriptions, locations, remote flags, timestamps). I chose it over `lukebarousse/data_jobs` (no descriptions) and sampled the first ~60 MB of the 517 MB CSV (13.9k clean postings after dedupe), loading 5,000. Cleaning: strip HTML, drop <200-char descriptions, dedupe on title+company+location, lexicon-based skill extraction. Arrival order is a deterministic shuffle so the incremental job simulates a feed.
 
 ## Design decisions & trade-offs
@@ -250,6 +255,8 @@ Postings come from the public Hugging Face dataset [`datastax/linkedin_job_listi
 
 ## Limitations and future work
 
+* Archived postings are closed; only the live feed (Europe focused, mostly tech and business roles) has real apply links, so open-only results are fewer and skew European.
+* Apply links open third party sites. Links from both sources are validated server side (http and https only) and re-checked in the browser before being rendered.
 * Golden-set labels come from explicit title rubrics, not human reading of every posting, and title-only rubrics favour title-matching retrievers.
 * The LLM judge is the same model family as the generator, so scores are optimistic.
 * Skills are a ~110-term lexicon, not a learned taxonomy; resumes must be text PDFs (no OCR).

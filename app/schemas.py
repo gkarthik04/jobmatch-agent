@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from app.services.job_status import is_open, link_for, source_label
+
 
 class JobOut(BaseModel):
     id: int
@@ -15,6 +17,12 @@ class JobOut(BaseModel):
     score: float
     ranks: dict[str, int] = {}
     rerank_score: float | None = None
+    url: str | None = None  # the listing page
+    apply_url: str | None = None  # where to apply (falls back to url)
+    source: str = ""
+    source_label: str = ""
+    is_open: bool = False
+    expires_at: datetime | None = None
 
 
 class SearchResponse(BaseModel):
@@ -32,6 +40,8 @@ def job_out(hit) -> JobOut:
         snippet=(j.description or "")[:300].replace("\n", " "),
         score=round(hit.score, 5), ranks=hit.ranks,
         rerank_score=hit.rerank_score,
+        url=j.url, apply_url=link_for(j), source=j.source or "",
+        source_label=source_label(j.source), is_open=is_open(j), expires_at=j.expires_at,
     )
 
 

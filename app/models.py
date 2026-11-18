@@ -41,6 +41,12 @@ class Job(Base):
     experience_level: Mapped[str | None] = mapped_column(String(100))
     posted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     content_hash: Mapped[str] = mapped_column(String(64))
+    # where to apply. `url` is the listing page, `apply_url` the employer / application link.
+    url: Mapped[str | None] = mapped_column(Text)
+    apply_url: Mapped[str | None] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(30), default="linkedin_2024")
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))  # live feeds only
     embedding = mapped_column(Vector(EMBED_DIM), nullable=True)
     embedding_model: Mapped[str | None] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -214,6 +214,19 @@
   /* ------------------------------------------------------------- job cards */
   const saved = new Set();
   const fb = new Map();
+  // links come from a dataset and a third party feed: re-check the scheme before rendering an href
+  const safeHref = (u) => (/^https?:\/\//i.test(u || "") ? u : "");
+  const monthYear = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "");
+  function applyBlock(j) {
+    const href = safeHref(j.apply_url || j.url);
+    if (!href) return '<span class="caption-2 muted">No apply link for this posting</span>';
+    const attrs = `href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow"`;
+    if (j.is_open) {
+      return `<a class="btn btn-primary button-sm" ${attrs}>Apply<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a><span class="caption-5 muted">via ${esc(j.source_label)}</span>`;
+    }
+    const note = j.expires_at ? `Listing expired ${esc(monthYear(j.expires_at))}` : "Archived listing, probably closed";
+    return `<a class="btn btn-ghost button-sm" ${attrs}>View original listing<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a><span class="caption-5 muted">${note}</span>`;
+  }
   function jobCard(j, m, opts = {}) {
     const posted = j.posted_at ? new Date(j.posted_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
     const fit = m ? `<div class="fit"><div class="num">${m.fit_score}<span class="caption-2 muted"> / 100</span></div><div class="bar" aria-hidden="true"><i data-fit="${m.fit_score}"></i></div></div>` : "";
@@ -223,6 +236,7 @@
       : `<p class="body-6 muted">${esc(j.snippet)}</p><div class="chip-row">${chips(j.skills)}</div>`;
     const f = fb.get(j.id);
     const actions = [
+      applyBlock(j),
       m ? `<button class="btn btn-ghost button-sm" type="button" data-fb="1" aria-pressed="${f === true}"><i class="ph ph-thumbs-up" aria-hidden="true"></i>Like</button>
            <button class="btn btn-ghost button-sm" type="button" data-fb="0" aria-pressed="${f === false}"><i class="ph ph-thumbs-down" aria-hidden="true"></i>Dislike</button>` : "",
       opts.removable
@@ -232,7 +246,7 @@
     ].join("");
     return `<article class="card job" data-id="${j.id}">
       <div class="job-top"><div><h3 class="title-2">${esc(j.title)}</h3>
-        <div class="job-meta caption-2"><span>${esc(j.company || "Company not listed")}</span><span>${esc(j.location || "")}</span>${j.remote ? '<span class="chip caption-4">Remote</span>' : ""}${posted ? `<span>${posted}</span>` : ""}</div></div>${fit}</div>
+        <div class="job-meta caption-2"><span>${esc(j.company || "Company not listed")}</span><span>${esc(j.location || "")}</span>${j.remote ? '<span class="chip caption-4">Remote</span>' : ""}${j.is_open ? '<span class="chip have caption-4">Open now</span>' : '<span class="chip gap caption-4">Archived</span>'}${posted ? `<span>${posted}</span>` : ""}</div></div>${fit}</div>
       ${body}<div class="job-actions">${actions}</div></article>`;
   }
   function paintBars(root) {
@@ -281,7 +295,7 @@
     const b = $("#loadMatches"); b.disabled = true;
     $("#matchNote").innerHTML = ""; $("#matchList").innerHTML = skeleton(3);
     try {
-      const rows = await api("/matches?limit=10" + ($("#mRemote").checked ? "&remote=true" : ""));
+      const rows = await api("/matches?limit=10" + ($("#mRemote").checked ? "&remote=true" : "") + ($("#mOpen").checked ? "&open_only=true" : ""));
       matchCache = rows;
       $("#matchList").innerHTML = rows.length ? rows.map((m) => jobCard(m.job, m)).join("")
         : emptyState("tray", "No matches found", "Try turning off Remote only, or upload a resume that lists more skills.");
@@ -301,6 +315,7 @@
     const p = new URLSearchParams({ q, mode: $("#mode").value, limit: 10 });
     if ($("#loc").value.trim()) p.set("location", $("#loc").value.trim());
     if ($("#sRemote").checked) p.set("remote", "true");
+    if ($("#sOpen").checked) p.set("open_only", "true");
     $("#searchList").innerHTML = skeleton(3);
     try {
       const d = await api("/search?" + p);

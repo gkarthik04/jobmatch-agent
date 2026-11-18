@@ -17,12 +17,15 @@ async def search_jobs(
     location: str | None = None,
     remote: bool | None = None,
     posted_within_days: int | None = Query(None, ge=1, le=365),
+    open_only: bool = False,
     session: AsyncSession = Depends(get_session),
     embedder=Depends(get_embedder),
     llm=Depends(get_llm_dep),
 ):
     """Hybrid job search. `mode`: vector | fts | hybrid | hybrid_rerank."""
-    filters = SearchFilters(location=location, remote=remote, posted_within_days=posted_within_days)
+    filters = SearchFilters(
+        location=location, remote=remote, posted_within_days=posted_within_days, open_only=open_only
+    )
     hits = await search(session, embedder, q, filters=filters, mode=mode, limit=limit * 3, llm=llm)
     hits = dedupe_hits(hits, limit=limit)  # one posting listed in many cities appears once
     return SearchResponse(query=q, mode=mode, count=len(hits), results=[job_out(h) for h in hits])

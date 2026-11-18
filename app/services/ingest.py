@@ -7,8 +7,9 @@ import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from sqlalchemy import select, text, update
+from sqlalchemy import bindparam, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
@@ -37,6 +38,11 @@ class CleanJob:
     experience_level: str | None
     posted_at: datetime | None
     content_hash: str
+    url: str | None = None
+    apply_url: str | None = None
+    source: str = "linkedin_2024"
+    expires_at: datetime | None = None
+    last_seen_at: datetime | None = None
 
 
 _TAG = re.compile(r"<[^>]+>")
@@ -52,6 +58,39 @@ def clean_text(s: str) -> str:
 
 def content_hash(title: str, company: str | None, location: str | None, desc: str) -> str:
     return hashlib.sha256(f"{title}|{company}|{location}|{desc}".encode()).hexdigest()
+
+
+_SCHEME = re.compile(r"^[a-z][a-z0-9+.\-]*:", re.I)
+_BARE_DOMAIN = re.compile(r"^(www\.)?[\w\-]+(\.[\w\-]+)+(/|$)")
+
+
+def normalize_link(u: str | None, drop_params: tuple[str, ...] = ()) -> str | None:
+    """Return a safe http(s) URL or None. Rejects javascript:, data:, mailto:, etc. outright.
+
+    Dataset links are untrusted input that ends up in an <a href>, so only http and https survive.
+    Bare domains ("www.example.org") get https. `drop_params` removes tracking parameters.
+    """
+    u = (u or "").strip()
+    if not u or u.lower() in ("nan", "none", "null") or len(u) > 1000:
+        return None
+    if not _SCHEME.match(u):
+        if not _BARE_DOMAIN.match(u):
+            return None
+        u = "https://" + u
+    parts = urlsplit(u)
+    if parts.scheme.lower() not in ("http", "https") or not parts.netloc or " " in parts.netloc:
+        return None
+    if drop_params and parts.query:
+        q = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if k not in drop_params]
+        parts = parts._replace(query=urlencode(q))
+    return urlunsplit(parts)
+
+
+def _ms_to_dt(v) -> datetime | None:
+    try:
+        return datetime.fromtimestamp(float(v) / 1000, tz=UTC) if v == v and v else None
+    except (TypeError, ValueError, OverflowError, OSError):
+        return None
 
 
 def _val(row: dict, key: str) -> str:
@@ -84,6 +123,9 @@ def clean_row(row: dict) -> CleanJob | None:
         location=location, remote=remote, description=desc, skills=skills,
         experience_level=level, posted_at=posted,
         content_hash=content_hash(title, company, location, desc),
+        url=normalize_link(_val(row, "job_posting_url"), drop_params=("trk", "trackingId", "refId")),
+        apply_url=normalize_link(_val(row, "application_url")),
+        source="linkedin_2024", expires_at=_ms_to_dt(row.get("expiry")),
     )
 
 
@@ -124,6 +166,7 @@ class IngestStats:
     updated: int = 0
     unchanged: int = 0
     embedded: int = 0
+    meta_updated: int = 0
 
 
 async def upsert_jobs(session: AsyncSession, feed: list[CleanJob], add_new: int) -> IngestStats:
@@ -133,19 +176,33 @@ async def upsert_jobs(session: AsyncSession, feed: list[CleanJob], add_new: int)
     new rows are inserted without an embedding.
     """
     stats = IngestStats()
-    existing = dict((await session.execute(select(Job.source_id, Job.content_hash))).all())
+    existing = {
+        r[0]: (r[1], r[2], r[3], r[4], r[5])
+        for r in (await session.execute(select(
+            Job.source_id, Job.content_hash, Job.url, Job.apply_url, Job.expires_at, Job.last_seen_at
+        ))).all()
+    }
     new_budget = add_new
+    meta_batch: list[dict] = []  # same text, new link/expiry/freshness: one batched UPDATE
     for j in feed:
         if j.source_id in existing:
-            if existing[j.source_id] == j.content_hash:
-                stats.unchanged += 1
+            old_hash, *old_meta = existing[j.source_id]
+            if old_hash == j.content_hash:
+                # same text: no re-embedding. Only refresh link / expiry / freshness metadata.
+                if tuple(old_meta) != (j.url, j.apply_url, j.expires_at, j.last_seen_at):
+                    meta_batch.append({"b_sid": j.source_id, "b_url": j.url, "b_apply": j.apply_url,
+                                       "b_exp": j.expires_at, "b_seen": j.last_seen_at})
+                    stats.meta_updated += 1
+                else:
+                    stats.unchanged += 1
                 continue
             await session.execute(
                 update(Job).where(Job.source_id == j.source_id).values(
                     title=j.title, company=j.company, location=j.location, remote=j.remote,
                     description=j.description, skills=j.skills, experience_level=j.experience_level,
                     posted_at=j.posted_at, content_hash=j.content_hash, embedding=None,
-                    embedding_model=None, updated_at=datetime.now(UTC),
+                    embedding_model=None, updated_at=datetime.now(UTC), url=j.url,
+                    apply_url=j.apply_url, expires_at=j.expires_at, last_seen_at=j.last_seen_at,
                 )
             )
             stats.updated += 1
@@ -153,6 +210,15 @@ async def upsert_jobs(session: AsyncSession, feed: list[CleanJob], add_new: int)
             session.add(Job(**j.__dict__))
             new_budget -= 1
             stats.inserted += 1
+    if meta_batch:
+        table = Job.__table__
+        await session.execute(
+            update(table).where(table.c.source_id == bindparam("b_sid")).values(
+                url=bindparam("b_url"), apply_url=bindparam("b_apply"),
+                expires_at=bindparam("b_exp"), last_seen_at=bindparam("b_seen"),
+            ),
+            meta_batch,
+        )
     await session.commit()
     return stats
 

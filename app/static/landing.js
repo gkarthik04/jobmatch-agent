@@ -61,11 +61,20 @@
       <div class="chip-row" style="margin-top:var(--s-75)">${have}${gap}</div></div>
       <div class="score"><div class="num">${r.overlap}<small>%</small></div><div class="caption-5 muted">skill overlap</div><div class="bar" aria-hidden="true"><i></i></div></div></article>`;
   }
+  const safeHref = (u) => (/^https?:\/\//i.test(u || "") ? u : "");
+  function liveLink(j) {
+    const href = safeHref(j.apply_url || j.url);
+    if (!href) return "";
+    const attrs = `href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow"`;
+    return j.is_open
+      ? `<div style="margin-top:var(--s-100);display:flex;gap:var(--s-100);align-items:center;flex-wrap:wrap"><a class="btn btn-primary button-xsm" ${attrs}>Apply<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a><span class="caption-5 muted">Open now, via ${esc(j.source_label)}</span></div>`
+      : `<div style="margin-top:var(--s-100)"><a class="text-link caption-4" ${attrs}>View original listing</a> <span class="caption-5 muted">Archived, probably closed</span></div>`;
+  }
   function liveRow(j, i) {
     return `<article class="res" style="--d:${i * 90}ms"><div style="min-width:0">
       <div class="title-3">${esc(j.title)}</div>
       <div class="caption-2 muted">${esc(j.company || "Company not listed")}${j.location ? " · " + esc(j.location) : ""}${j.remote ? " · Remote" : ""}</div>
-      <div class="chip-row" style="margin-top:var(--s-75)">${(j.skills || []).slice(0, 5).map((s) => chip(s)).join("")}</div></div>
+      <div class="chip-row" style="margin-top:var(--s-75)">${(j.skills || []).slice(0, 5).map((s) => chip(s)).join("")}</div>${liveLink(j)}</div>
       <div class="score"><div class="num">${i + 1}</div><div class="caption-5 muted">rank</div></div></article>`;
   }
   async function swapRows(container, html) {
@@ -112,7 +121,7 @@
     side.innerHTML = `<span class="caption-3 muted">Live search</span><span class="big">${esc(q)}</span><span class="caption-2 muted">Hybrid search over the whole index. No resume needed.</span>`;
     main.innerHTML = Array.from({ length: 3 }, () => '<div class="skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></div>').join("");
     try {
-      const r = await fetch("/search?" + new URLSearchParams({ q, limit: 12, mode: "hybrid" }));
+      const r = await fetch("/search?" + new URLSearchParams({ q, limit: 12, mode: "hybrid", ...($("#liveOpen")?.checked ? { open_only: "true" } : {}) }));
       const d = await r.json();
       if (!r.ok) throw new Error(d.error?.message || "Search failed");
       const rows = d.results.slice(0, 4);

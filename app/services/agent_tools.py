@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Job, SavedJob
 from app.schemas import ProfileSchema
+from app.services.job_status import is_open, link_for, source_label
 from app.services.matching import heuristic_fit, skill_gap
 from app.services.search import SearchFilters, dedupe_hits, search
 
@@ -32,6 +33,9 @@ class SearchArgs(BaseModel):
     remote: bool | None = Field(None, description="true = remote jobs only")
     location: str | None = Field(None, description="City/state/country substring, e.g. 'Austin'")
     posted_within_days: int | None = Field(None, ge=1, le=365, description="Only recent postings")
+    open_only: bool | None = Field(
+        None, description="true = only jobs that are open to apply to right now (live feed)"
+    )
     limit: int = Field(5, ge=1, le=10, description="How many results (default 5)")
 
 
@@ -50,12 +54,15 @@ class ToolError(Exception):
 def _brief(j: Job) -> dict:
     return {
         "job_id": j.id, "title": j.title, "company": j.company, "location": j.location,
-        "remote": j.remote, "skills": (j.skills or [])[:8],
+        "remote": j.remote, "skills": (j.skills or [])[:8], "open_now": is_open(j),
     }
 
 
 async def search_jobs(ctx: AgentContext, a: SearchArgs) -> dict:
-    filters = SearchFilters(location=a.location, remote=a.remote, posted_within_days=a.posted_within_days)
+    filters = SearchFilters(
+        location=a.location, remote=a.remote, posted_within_days=a.posted_within_days,
+        open_only=bool(a.open_only),
+    )
     hits = await search(
         ctx.session, ctx.embedder, a.query, filters=filters, mode="hybrid", limit=a.limit * 3
     )
@@ -63,7 +70,8 @@ async def search_jobs(ctx: AgentContext, a: SearchArgs) -> dict:
     ctx.state["last_query"] = a.query
     ctx.state["last_filters"] = {
         k: v for k, v in {"remote": a.remote, "location": a.location,
-                          "posted_within_days": a.posted_within_days}.items() if v is not None
+                          "posted_within_days": a.posted_within_days,
+                          "open_only": a.open_only}.items() if v is not None
     }
     ctx.state["last_results"] = [h.job.id for h in hits]
     return {"count": len(hits), "results": [{"position": i + 1, **_brief(h.job)} for i, h in enumerate(hits)]}
@@ -75,6 +83,8 @@ async def get_job_details(ctx: AgentContext, a: JobIdArgs) -> dict:
         raise ToolError(f"No job with job_id={a.job_id}")
     return {**_brief(job), "experience_level": job.experience_level,
             "posted_at": job.posted_at.isoformat() if job.posted_at else None,
+            "source": source_label(job.source), "apply_link": link_for(job),
+            "apply_note": None if is_open(job) else "This listing is archived and probably closed.",
             "description": job.description[:1800]}
 
 

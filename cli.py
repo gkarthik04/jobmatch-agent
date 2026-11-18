@@ -3,6 +3,7 @@
     python cli.py fetch                 # download the dataset sample (first ~60MB)
     python cli.py ingest --add 4000     # initial load (oldest postings first)
     python cli.py ingest --add 200      # incremental: next 200 postings + any changed rows
+    python cli.py ingest-live           # add open jobs (with apply links) from the live feed
     python cli.py stats
 """
 
@@ -46,6 +47,23 @@ async def ingest(add: int, no_embed: bool) -> None:
     await dispose_engine()
 
 
+async def ingest_live(pages: int) -> None:
+    from app.services import ingest as ing
+    from app.services import live_feed as lf
+    from app.services.embeddings import make_embedder
+
+    raw = await asyncio.to_thread(lf.fetch_pages, pages)
+    feed = lf.clean_feed(raw)
+    print(f"live feed: {len(raw)} fetched, {len(feed)} kept (English, complete)")
+    async with get_sessionmaker()() as session:
+        stats = await ing.upsert_jobs(session, feed, add_new=10**9)
+        print(f"upsert: {stats}")
+        stats.embedded = await ing.embed_pending(session, make_embedder())
+        print(f"embedded {stats.embedded} rows")
+        await ing.analyze(session)
+    await dispose_engine()
+
+
 async def stats() -> None:
     from sqlalchemy import text
 
@@ -65,11 +83,15 @@ def main() -> None:
     pi = sub.add_parser("ingest")
     pi.add_argument("--add", type=int, default=200, help="max NEW postings to add this run")
     pi.add_argument("--no-embed", action="store_true")
+    pl = sub.add_parser("ingest-live")
+    pl.add_argument("--pages", type=int, default=3)
     a = p.parse_args()
     if a.cmd == "fetch":
         fetch()
     elif a.cmd == "ingest":
         asyncio.run(ingest(a.add, a.no_embed))
+    elif a.cmd == "ingest-live":
+        asyncio.run(ingest_live(a.pages))
     elif a.cmd == "stats":
         asyncio.run(stats())
 

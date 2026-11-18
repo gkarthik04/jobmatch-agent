@@ -14,7 +14,8 @@ Mini version of Elip's product. Python 3.11, FastAPI (async), SQLAlchemy 2 async
   - `search.py` vector + full-text + title-full-text → weighted RRF; `rerank.py` LLM rerank (fails open).
   - `resume.py` PDF → `ProfileSchema` with validate/retry; `matching.py` matches + explanations; `preferences.py` Rocchio.
   - `agent.py` explicit plan→act→check loop; `agent_tools.py` tool registry + Pydantic arg models.
-  - `ingest.py` clean / upsert / embed only new-or-changed rows.
+  - `ingest.py` clean / upsert / embed only new-or-changed rows; `normalize_link` makes dataset links safe (http/https only).
+  - `live_feed.py` Arbeitnow feed (open jobs + apply links, `ingest-live` CLI, daily action); `job_status.py` defines what "open" means (`is_open`, `OPEN_SQL`) and where the apply link points.
 - `cli.py` fetch / ingest / stats. `evals/` offline suite (`python -m evals.run` → `evals/RESULTS.md`).
 - `tests/` pytest; LLM and embedder are fakes. Tests marked `db` need `TEST_DATABASE_URL` (pgvector); CI provides it.
 

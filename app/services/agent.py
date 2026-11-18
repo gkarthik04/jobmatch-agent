@@ -41,6 +41,9 @@ adjust the arguments or approach once, otherwise tell the user plainly what went
 (position -> job_id). For refinements like "only remote ones" or "in Austin", call search_jobs \
 again with the previous query plus the new filter.
 - Comparing a job to the user's resume = compare_resume_to_job. Saving = save_job.
+- To apply: call get_job_details and give the apply_link. If apply_note says the listing is \
+archived, say it is probably closed. When the user wants jobs they can apply to now, search with \
+open_only=true.
 - Be concise. List jobs as: position. Title - Company (Location) [job_id]."""
 
 

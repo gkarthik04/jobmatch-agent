@@ -21,6 +21,7 @@ async def matches(
     limit: int = Query(10, ge=1, le=20),
     remote: bool | None = None,
     location: str | None = None,
+    open_only: bool = False,
     personalise: bool = True,
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_session),
@@ -32,7 +33,8 @@ async def matches(
         raise AppError(409, "no_profile", "Upload a resume first (POST /resume)")
     return await get_matches(
         session, embedder, llm, user.id, k=limit,
-        filters=SearchFilters(remote=remote, location=location), personalise=personalise,
+        filters=SearchFilters(remote=remote, location=location, open_only=open_only),
+        personalise=personalise,
     )
 
 

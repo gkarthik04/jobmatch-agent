@@ -162,10 +162,17 @@ async def seed_jobs(client):
              remote=False, skills=["react", "javascript"],
              description="zyxwvu frontend react javascript ui " * 10),
     ]
+    from datetime import UTC, datetime
+
+    extras = {  # test-1 is an open live job; test-2 an archived one with an expiry in 2024
+        "test-1": dict(source="arbeitnow", url="https://example.org/jobs/1",
+                       apply_url="https://example.org/apply/1", last_seen_at=datetime.now(UTC)),
+        "test-2": dict(url="https://www.linkedin.com/jobs/view/2/", expires_at=datetime(2024, 5, 1, tzinfo=UTC)),
+    }
     emb = FakeEmbedder()
     async with client.maker() as s:
         for r in rows:
-            job = Job(content_hash=r["source_id"], **r)
+            job = Job(content_hash=r["source_id"], **r, **extras.get(r["source_id"], {}))
             job.embedding = (await emb.embed([embedding_text(job)]))[0]
             s.add(job)
         await s.commit()

@@ -180,3 +180,24 @@ async def test_chat_rate_limit_and_error_envelope(client, auth, fake_llm, monkey
     assert r.headers["retry-after"] and r.json()["error"]["code"] == "rate_limited"
     assert (await client.post("/chat", headers=auth, json={"message": ""})).json()["error"]["code"] in (
         "validation_error", "rate_limited")
+
+
+@pytest.mark.db
+async def test_search_exposes_apply_links_and_open_only_filter(client, seed_jobs):
+    res = (await client.get("/search", params={"q": "zyxwvu", "limit": 10})).json()["results"]
+    by = {r["title"]: r for r in res}
+    live, archived = by["Zyxwvu Backend Engineer"], by["Zyxwvu Data Analyst"]
+    assert live["is_open"] and live["apply_url"] == "https://example.org/apply/1"
+    assert live["source_label"] == "Arbeitnow"
+    assert not archived["is_open"] and archived["url"].startswith("https://www.linkedin.com/")
+    assert archived["expires_at"].startswith("2024-05-01")
+    only = (await client.get("/search", params={"q": "zyxwvu", "open_only": True})).json()["results"]
+    assert [r["title"] for r in only] == ["Zyxwvu Backend Engineer"]
+
+
+@pytest.mark.db
+async def test_matches_open_only(client, auth, seed_jobs):
+    await client.post("/resume", headers=auth, files={"file": ("cv.pdf", make_pdf(RESUME), "application/pdf")})
+    rows = (await client.get("/matches", headers=auth, params={"limit": 20, "open_only": True})).json()
+    assert rows and all(m["job"]["is_open"] for m in rows)
+    assert {m["job"]["title"] for m in rows if m["job"]["title"].startswith("Zyxwvu")} == {"Zyxwvu Backend Engineer"}
