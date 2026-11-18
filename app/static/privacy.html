@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy: JobMatch</title>
+<meta name="description" content="What JobMatch stores, where it goes, and who can see it.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<a class="skip body-5" href="#main">Skip to content</a>
+<header><nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="JobMatch home"><svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="body-1">JobMatch</span></a><div class="nav-end"><a class="nav-link body-5" href="/">Back to home</a></div></nav></header>
+<main id="main" class="page">
+  <article class="doc">
+    <h1 class="heading-3">Privacy</h1>
+    <p class="body-6 muted">JobMatch is a portfolio demo. This page says plainly what it does with your data.</p>
+    <h2 class="heading-6">What is stored</h2>
+    <ul class="body-6">
+      <li>Your email address and a hashed password. The password itself is never stored.</li>
+      <li>The text of your resume and the profile extracted from it.</li>
+      <li>Your likes and dislikes, saved jobs, and chat messages.</li>
+      <li>Logs of each agent step: tool names, arguments, timing, and token counts.</li>
+    </ul>
+    <h2 class="heading-6">Where it is stored</h2>
+    <p class="body-6">In a Postgres database hosted by Neon. The app runs on Render. Every query is scoped to your account, so other users cannot read your data through the app.</p>
+    <h2 class="heading-6">Who else receives it</h2>
+    <ul class="body-6">
+      <li>The Google Gemini API receives your resume text, your chat messages, and posting text to extract your profile, rank jobs, and write explanations.</li>
+      <li>Your browser loads fonts from Google Fonts and icons from unpkg, so those providers can see your IP address.</li>
+    </ul>
+    <h2 class="heading-6">Cookies and tracking</h2>
+    <p class="body-6">There are no cookies and no analytics. Your login token is kept in your browser local storage until you log out.</p>
+    <h2 class="heading-6">Your choices</h2>
+    <p class="body-6">You can clear your chat history in the app at any time. This is a demo, so to ask for your account and data to be deleted, open an issue on the GitHub repository. Please do not upload resumes that contain information you would not want stored, such as government identifiers.</p>
+  </article>
+</main>
+<footer class="footer"><div class="page footer-row"><span class="caption-2 muted">A portfolio project. Postings come from a public dataset and are not live openings.</span><nav class="footer-links body-5" aria-label="Footer"><a href="/privacy" aria-current="page">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/gkarthik04/jobmatch-agent" rel="noopener">GitHub</a></nav></div></footer>
+</body>
+</html>

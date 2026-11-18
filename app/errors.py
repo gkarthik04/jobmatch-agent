@@ -1,15 +1,17 @@
 """Consistent error envelope: {"error": {"code", "message", "request_id", "details"?}}."""
 
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.logging_conf import request_id_var
 
 log = logging.getLogger("app.errors")
+NOT_FOUND_PAGE = Path(__file__).parent / "static" / "404.html"
 
 
 class AppError(Exception):
@@ -35,7 +37,11 @@ def install_error_handlers(app: FastAPI) -> None:
         return error_response(exc.status, exc.code, exc.message, exc.details, exc.headers)
 
     @app.exception_handler(StarletteHTTPException)
-    async def _http_error(_: Request, exc: StarletteHTTPException):
+    async def _http_error(request: Request, exc: StarletteHTTPException):
+        # browsers navigating to an unknown URL get the branded page; API clients keep JSON
+        if exc.status_code == 404 and "text/html" in request.headers.get("accept", "") \
+                and NOT_FOUND_PAGE.exists():
+            return FileResponse(NOT_FOUND_PAGE, status_code=404)
         return error_response(exc.status_code, "http_error", str(exc.detail), headers=exc.headers)
 
     @app.exception_handler(RequestValidationError)

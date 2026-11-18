@@ -66,6 +66,18 @@ def create_app() -> FastAPI:
         async def index():
             return FileResponse(STATIC_DIR / "index.html")
 
+        @app.get("/privacy", include_in_schema=False)
+        async def privacy():
+            return FileResponse(STATIC_DIR / "privacy.html")
+
+        @app.get("/terms", include_in_schema=False)
+        async def terms():
+            return FileResponse(STATIC_DIR / "terms.html")
+
+        @app.get("/favicon.ico", include_in_schema=False)
+        async def favicon():
+            return FileResponse(STATIC_DIR / "favicon.svg", media_type="image/svg+xml")
+
     return app
 
 

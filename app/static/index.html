@@ -3,233 +3,295 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JobMatch Agent</title>
-<style>
-  :root { --bg:#f6f7f9; --card:#fff; --ink:#1a2030; --mute:#667085; --line:#e4e7ec; --brand:#4f46e5;
-          --good:#067647; --goodbg:#ecfdf3; --warn:#b54708; --warnbg:#fffaeb; --bad:#b42318; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0e1116; --card:#161b22; --ink:#e6e8ee; --mute:#9aa4b2; --line:#2a313c; --brand:#8b83ff;
-            --good:#6ce9a6; --goodbg:#0b2a1c; --warn:#fec84b; --warnbg:#2b2108; --bad:#fda29b; }
-  }
-  * { box-sizing:border-box; }
-  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
-  header { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:var(--card); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
-  header h1 { font-size:17px; margin:0; } header h1 span { color:var(--brand); }
-  main { max-width:900px; margin:0 auto; padding:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
-  nav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
-  nav button { border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:999px; cursor:pointer; font:inherit; }
-  nav button.on { background:var(--brand); color:#fff; border-color:var(--brand); }
-  input, select, textarea { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:9px 11px; width:100%; }
-  button.primary { background:var(--brand); color:#fff; border:0; padding:9px 16px; border-radius:8px; cursor:pointer; font:inherit; }
-  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); padding:6px 10px; border-radius:8px; cursor:pointer; font:inherit; }
-  button:disabled { opacity:.5; cursor:default; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; } .row > * { flex:1 1 auto; } .row > .fit { flex:0 0 auto; }
-  .chip { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12.5px; margin:2px 4px 2px 0; border:1px solid var(--line); }
-  .chip.good { background:var(--goodbg); color:var(--good); border-color:transparent; }
-  .chip.warn { background:var(--warnbg); color:var(--warn); border-color:transparent; }
-  .muted { color:var(--mute); font-size:13.5px; } .err { color:var(--bad); }
-  .job h3 { margin:0 0 2px; font-size:16px; } .job .actions { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
-  .score { font-weight:700; font-size:20px; } .bar { height:6px; background:var(--line); border-radius:4px; width:90px; overflow:hidden; } .bar i { display:block; height:100%; background:var(--brand); }
-  .chat { height:420px; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:4px; }
-  .msg { max-width:88%; padding:9px 12px; border-radius:12px; white-space:pre-wrap; word-wrap:break-word; }
-  .msg.user { align-self:flex-end; background:var(--brand); color:#fff; } .msg.bot { align-self:flex-start; background:var(--bg); border:1px solid var(--line); }
-  details { margin-top:6px; font-size:13px; } summary { cursor:pointer; color:var(--mute); }
-  .tool { font-family:ui-monospace,Consolas,monospace; font-size:12px; padding:3px 0; } .tool.fail { color:var(--bad); }
-  .hidden { display:none; } .auth { max-width:380px; margin:50px auto; } .auth input { margin-bottom:10px; }
-  h2 { margin:0 0 10px; font-size:16px; } .tag { font-size:11px; padding:1px 7px; border-radius:6px; background:var(--line); margin-left:6px; }
-</style>
+<title>JobMatch: rank real job postings against your resume</title>
+<meta name="description" content="Upload your resume and get a ranked shortlist of real job postings, with a plain explanation of every match and the exact skills you are missing.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JobMatch: rank real job postings against your resume">
+<meta property="og:description" content="Upload your resume and get a ranked shortlist of real job postings, with a plain explanation of every match and the exact skills you are missing.">
+<meta property="og:image" content="https://jobmatch-agent-ysjr.onrender.com/static/og.png">
+<meta property="og:url" content="https://jobmatch-agent-ysjr.onrender.com/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="/static/styles.css">
+<script>document.documentElement.classList.add("js");</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is JobMatch free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. You can create an account and use every feature without a card."}}, {"@type": "Question", "name": "Which resumes work?", "acceptedAnswer": {"@type": "Answer", "text": "Text based PDFs up to 5 MB. Scanned images are not supported, because there is no text to read."}}, {"@type": "Question", "name": "Are these live job openings?", "acceptedAnswer": {"@type": "Answer", "text": "No. The index comes from a public dataset of LinkedIn postings from April 2024, and it grows in small batches every six hours. Use it to see how the matching works, not to apply."}}, {"@type": "Question", "name": "How are matches ranked?", "acceptedAnswer": {"@type": "Answer", "text": "Three searches run together: one by meaning, one on the posting text, and one on the title. Their results are merged, and a language model reorders the top 50."}}, {"@type": "Question", "name": "What happens to my resume?", "acceptedAnswer": {"@type": "Answer", "text": "The text is stored in the app database so matches can be computed, and only your account can read it. To extract your profile, the text is sent to the Google Gemini API."}}, {"@type": "Question", "name": "Can I trust the explanations?", "acceptedAnswer": {"@type": "Answer", "text": "The skill gap comes from a skills list matched against the posting. The explanation and the fit score are written by a language model, so they can be wrong. Treat them as a starting point."}}, {"@type": "Question", "name": "What can the chat agent do?", "acceptedAnswer": {"@type": "Answer", "text": "It can search jobs, open a job, compare it with your resume, save it, and list your saved jobs. Each reply shows the tools it called."}}, {"@type": "Question", "name": "Does it learn from my feedback?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Likes pull your next results toward similar jobs. Dislikes push them away and hide that job."}}, {"@type": "Question", "name": "Why is it sometimes slow or busy?", "acceptedAnswer": {"@type": "Answer", "text": "The demo runs on free model quotas. If a model is busy you will see a short message. Wait a minute and try again."}}, {"@type": "Question", "name": "Can I read the code?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The project is open source on GitHub, including the evaluation suite."}}]}</script>
 </head>
 <body>
-<header><h1>Job<span>Match</span> Agent</h1><div id="who" class="muted"></div></header>
-<main>
-  <section id="auth" class="card auth hidden">
-    <h2 id="authTitle">Log in</h2>
-    <input id="email" type="email" placeholder="Email" autocomplete="username">
-    <input id="password" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
-    <div class="row"><button class="primary" id="authBtn">Log in</button><button class="ghost" id="authSwitch">Need an account? Sign up</button></div>
-    <p id="authErr" class="err"></p>
-  </section>
+<a class="skip body-5" href="#main">Skip to content</a>
 
-  <section id="app" class="hidden">
-    <nav id="tabs">
-      <button data-t="profile" class="on">Profile</button><button data-t="matches">Matches</button>
-      <button data-t="chat">Agent chat</button><button data-t="search">Search</button>
-      <button data-t="saved">Saved</button><button id="logout" style="margin-left:auto">Log out</button>
-    </nav>
-
-    <div id="t-profile" class="tab">
-      <div class="card">
-        <h2>Your resume</h2>
-        <p class="muted">Upload a text-based PDF. Gemini extracts a structured profile (validated against a schema).</p>
-        <div class="row"><input id="file" type="file" accept="application/pdf"><button class="primary fit" id="upload">Upload &amp; parse</button></div>
-        <p id="upErr" class="err"></p>
-      </div>
-      <div id="profileView"></div>
+<header>
+  <nav class="nav" id="nav" aria-label="Main">
+    <a class="brand" href="/" aria-label="JobMatch home">
+      <svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="body-1">JobMatch</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a class="nav-link body-5" href="#how">How it works</a>
+      <a class="nav-link body-5" href="#results">Results</a>
+      <a class="nav-link body-5" href="#faq">FAQ</a>
     </div>
-
-    <div id="t-matches" class="tab hidden">
-      <div class="card row">
-        <label class="fit"><input type="checkbox" id="mRemote" style="width:auto"> Remote only</label>
-        <button class="primary fit" id="loadMatches">Find my matches</button>
-        <span class="muted">Like / dislike a job and re-run: your preference vector reshapes the ranking.</span>
-      </div>
-      <div id="matchList"></div>
+    <div class="nav-end" id="navEnd">
+      <button class="nav-link body-5" type="button" data-auth="login">Log in</button>
     </div>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu" data-open="false" aria-hidden="true"></div>
+</header>
 
-    <div id="t-chat" class="tab hidden">
-      <div class="card">
-        <div id="chat" class="chat"></div>
-        <div class="row" style="margin-top:10px">
-          <input id="chatIn" placeholder="e.g. find remote python backend jobs, then compare the 2nd one with my resume" maxlength="2000">
-          <button class="primary fit" id="chatSend">Send</button><button class="ghost fit" id="chatReset">Clear</button>
+<main id="main">
+  <!-- ================= LANDING ================= -->
+  <div id="landing">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="page">
+        <div class="hero-copy">
+          <h1 id="hero-title" class="heading-1 gradient-text">Know which jobs<br>fit your resume</h1>
+          <p class="hero-sub title-2">Upload your resume. JobMatch ranks real postings against your skills and explains every match and every missing skill.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary button-lg" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
+            <p class="hero-proof caption-2"><i class="ph ph-check-circle" aria-hidden="true"></i>Searches 5,000+ real postings from a public April 2024 LinkedIn dataset</p>
+          </div>
+        </div>
+
+        <div class="window reveal" role="img" aria-label="Example output for a sample data analyst resume: three ranked job matches with fit scores and skill chips">
+          <div class="window-bar caption-4"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Example output for a sample data analyst resume</span></div>
+          <div class="window-body">
+            <div class="window-side">
+              <span class="caption-3 muted">Profile</span>
+              <span class="title-3">Data analyst</span>
+              <span class="caption-2 muted">1.3 years of experience</span>
+              <div class="chip-row"><span class="chip caption-4">SQL</span><span class="chip caption-4">Power BI</span><span class="chip caption-4">Excel</span><span class="chip caption-4">Statistics</span></div>
+            </div>
+            <div class="window-main">
+              <div class="mini-card">
+                <div class="grow"><div class="title-3">Data Analyst</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>SQL</span><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>Excel</span></div></div>
+                <div class="mini-score"><div class="heading-5">95</div><div class="caption-5 muted">fit score</div></div>
+              </div>
+              <div class="mini-card">
+                <div class="grow"><div class="title-3">Power BI Visual Creator Consultant</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>Power BI</span><span class="chip gap caption-4">To add: Tableau</span></div></div>
+                <div class="mini-score"><div class="heading-5">65</div><div class="caption-5 muted">fit score</div></div>
+              </div>
+              <div class="mini-card">
+                <div class="grow"><div class="title-3">Sr. Reporting Analyst (SQL, PowerBI)</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>SQL</span><span class="chip gap caption-4">To add: ETL</span></div></div>
+                <div class="mini-score"><div class="heading-5">50</div><div class="caption-5 muted">fit score</div></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div id="t-search" class="tab hidden">
-      <div class="card">
-        <div class="row"><input id="q" placeholder="Search jobs, e.g. data analyst sql tableau"><button class="primary fit" id="doSearch">Search</button></div>
-        <div class="row" style="margin-top:8px">
-          <select id="mode"><option value="hybrid">Hybrid (full-text + vector, RRF)</option><option value="hybrid_rerank">Hybrid + LLM rerank</option><option value="vector">Vector only</option><option value="fts">Full-text only</option></select>
-          <input id="loc" placeholder="Location contains…"><label class="fit"><input type="checkbox" id="sRemote" style="width:auto"> Remote</label>
+    <section class="section" aria-labelledby="problem-title">
+      <div class="page">
+        <div class="section-head reveal">
+          <span class="eyebrow caption-3">The problem</span>
+          <h2 id="problem-title" class="heading-3">Job boards match keywords. Your resume says more than that.</h2>
+        </div>
+        <div class="problem">
+          <div class="card reveal">
+            <i class="ph ph-funnel" aria-hidden="true" style="font-size:24px;color:var(--muted)"></i>
+            <h3 class="title-2">Keyword filters</h3>
+            <p class="body-6 muted">You search by title, scroll through hundreds of listings, guess which ones fit, and find out about missing skills only after you have applied.</p>
+          </div>
+          <div class="card after reveal">
+            <i class="ph ph-list-numbers" aria-hidden="true" style="font-size:24px;color:var(--accent)"></i>
+            <h3 class="title-2">A ranked shortlist</h3>
+            <p class="body-6 muted">JobMatch reads your whole resume, searches by meaning and by exact words, orders the best results, and tells you why each one fits.</p>
+          </div>
         </div>
       </div>
-      <div id="searchList"></div>
-    </div>
+    </section>
 
-    <div id="t-saved" class="tab hidden"><div id="savedList"></div></div>
-  </section>
+    <section class="section" aria-labelledby="benefits-title">
+      <div class="page">
+        <div class="section-head reveal">
+          <span class="eyebrow caption-3">Benefits</span>
+          <h2 id="benefits-title" class="heading-3">From resume to a shortlist you can check</h2>
+        </div>
+        <div class="benefits">
+          <article class="card reveal"><span class="icon-tile"><i class="ph ph-ranking" aria-hidden="true"></i></span><h3 class="title-2 card-title">See the best fits first</h3><p class="body-6 muted">Each search runs three ways: by meaning, by words in the description, and by words in the title. A language model then reorders the top 50.</p></article>
+          <article class="card reveal"><span class="icon-tile"><i class="ph ph-chat-text" aria-hidden="true"></i></span><h3 class="title-2 card-title">Know why a job fits</h3><p class="body-6 muted">Every match comes with a short explanation and a fit score out of 100, written from your resume and the posting.</p></article>
+          <article class="card reveal"><span class="icon-tile"><i class="ph ph-target" aria-hidden="true"></i></span><h3 class="title-2 card-title">See the exact skills to add</h3><p class="body-6 muted">Matched and missing skills come from the posting itself, so the gap list is never guessed by a model.</p></article>
+          <article class="card wide reveal"><span class="icon-tile"><i class="ph ph-thumbs-up" aria-hidden="true"></i></span><h3 class="title-2 card-title">Teach it your taste</h3><p class="body-6 muted">Like or dislike a match and your next results move toward what you liked. Jobs you dislike stay hidden.</p></article>
+          <article class="card wide reveal"><span class="icon-tile"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i></span><h3 class="title-2 card-title">Ask instead of filtering</h3><p class="body-6 muted">Say only remote ones, or compare the second one with my resume. The agent remembers the conversation and shows every tool it used.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="tagline" aria-label="What JobMatch does">
+      <div class="page">
+        <p class="heading-3" id="tagline">Your resume already shows what you are good at. JobMatch turns it into a ranked shortlist, explains every match, and names the skills to add next.</p>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="page">
+        <div class="section-head reveal">
+          <span class="eyebrow caption-3">How it works</span>
+          <h2 id="how-title" class="heading-3">Three steps from PDF to shortlist</h2>
+        </div>
+        <ol class="steps">
+          <li class="card reveal"><span class="step-num title-3">1</span><h3 class="title-2 card-title">Upload a PDF</h3><p class="body-6 muted">Use a text based PDF up to 5 MB. Your profile is extracted and checked against a strict schema.</p></li>
+          <li class="card reveal"><span class="step-num title-3">2</span><h3 class="title-2 card-title">Check your profile</h3><p class="body-6 muted">Review the skills, years of experience, and target roles we found before anything is matched.</p></li>
+          <li class="card reveal"><span class="step-num title-3">3</span><h3 class="title-2 card-title">Get matches and ask</h3><p class="body-6 muted">Open your ranked matches, then use chat to search, compare, and save jobs.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="results" aria-labelledby="results-title">
+      <div class="page">
+        <div class="section-head reveal">
+          <span class="eyebrow caption-3">Results</span>
+          <h2 id="results-title" class="heading-3">Measured, not claimed</h2>
+          <p class="body-3 muted">We built an evaluation suite and publish every number it produces.</p>
+        </div>
+        <div class="stats">
+          <div class="card stat reveal"><div class="heading-3">0.799</div><p class="body-6 muted">Ranking quality (nDCG@10) with rerank, up from 0.687 for vector search alone, on 43 test queries.</p></div>
+          <div class="card stat reveal"><div class="heading-3">15 of 15</div><p class="body-6 muted">Scripted agent conversations passed, with the right tool and the right arguments every turn.</p></div>
+          <div class="card stat reveal"><div class="heading-3">100%</div><p class="body-6 muted">Of 15 test resumes parsed into a valid structured profile on the first attempt.</p></div>
+          <div class="card stat reveal"><div class="heading-3">4.87 of 5</div><p class="body-6 muted">Average groundedness of match explanations, scored by a language model on 30 samples.</p></div>
+        </div>
+        <div class="stat-note reveal">
+          <p class="body-6 muted">These numbers come from our own test set of 5,000 postings and synthetic resumes. They show the system works as designed, not that it will find your next job.</p>
+          <a class="text-link body-5" href="https://github.com/gkarthik04/jobmatch-agent/blob/main/evals/RESULTS.md" rel="noopener">Read the full evaluation report, including what did not work</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="page">
+        <div class="section-head reveal">
+          <span class="eyebrow caption-3">FAQ</span>
+          <h2 id="faq-title" class="heading-3">Questions people ask first</h2>
+        </div>
+        <div class="faq reveal">
+          <details><summary class="body-2">Is JobMatch free?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. You can create an account and use every feature without a card.</div></details>
+          <details><summary class="body-2">Which resumes work?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Text based PDFs up to 5 MB. Scanned images are not supported, because there is no text to read.</div></details>
+          <details><summary class="body-2">Are these live job openings?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">No. The index comes from a public dataset of LinkedIn postings from April 2024, and it grows in small batches every six hours. Use it to see how the matching works, not to apply.</div></details>
+          <details><summary class="body-2">How are matches ranked?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Three searches run together: one by meaning, one on the posting text, and one on the title. Their results are merged, and a language model reorders the top 50.</div></details>
+          <details><summary class="body-2">What happens to my resume?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The text is stored in the app database so matches can be computed, and only your account can read it. To extract your profile, the text is sent to the Google Gemini API.</div></details>
+          <details><summary class="body-2">Can I trust the explanations?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The skill gap comes from a skills list matched against the posting. The explanation and the fit score are written by a language model, so they can be wrong. Treat them as a starting point.</div></details>
+          <details><summary class="body-2">What can the chat agent do?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">It can search jobs, open a job, compare it with your resume, save it, and list your saved jobs. Each reply shows the tools it called.</div></details>
+          <details><summary class="body-2">Does it learn from my feedback?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. Likes pull your next results toward similar jobs. Dislikes push them away and hide that job.</div></details>
+          <details><summary class="body-2">Why is it sometimes slow or busy?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The demo runs on free model quotas. If a model is busy you will see a short message. Wait a minute and try again.</div></details>
+          <details><summary class="body-2">Can I read the code?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. The project is open source on GitHub, including the evaluation suite.</div></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section final" aria-labelledby="final-title">
+      <div class="page">
+        <div class="card reveal">
+          <h2 id="final-title" class="heading-3">Know which jobs<br>fit your resume</h2>
+          <button class="btn btn-primary button-lg" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
+          <p class="risk caption-2"><span><i class="ph ph-check" aria-hidden="true"></i>Free to use</span><span><i class="ph ph-check" aria-hidden="true"></i>No card needed</span><span><i class="ph ph-check" aria-hidden="true"></i>Clear your chat history any time</span></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= APP ================= -->
+  <div id="appRoot" class="app" hidden>
+    <div class="page">
+      <section id="t-profile" class="tab" aria-labelledby="h-profile">
+        <div class="app-head"><h1 id="h-profile" class="heading-4">Your profile</h1><p class="body-6 muted">Upload a text based PDF. We extract your skills, experience, and target roles, then check them against a strict schema.</p></div>
+        <label class="dropzone" id="dropzone">
+          <i class="ph ph-file-pdf" aria-hidden="true"></i>
+          <span class="title-3" id="dropTitle">Drop your resume here or choose a file</span>
+          <span class="caption-2 muted" id="dropHint">PDF only, up to 5 MB</span>
+          <input id="file" type="file" accept="application/pdf,.pdf">
+        </label>
+        <div class="toolbar" style="margin-top:var(--s-200)">
+          <button class="btn btn-primary button-md" id="upload" type="button" disabled><i class="ph ph-arrow-up" aria-hidden="true"></i>Read my resume</button>
+          <span class="caption-2 muted" id="upStatus" role="status"></span>
+        </div>
+        <div class="inline-error body-6" id="upErr" role="alert"></div>
+        <div id="profileView"></div>
+      </section>
+
+      <section id="t-matches" class="tab" aria-labelledby="h-matches" hidden>
+        <div class="app-head"><h1 id="h-matches" class="heading-4">Your matches</h1><p class="body-6 muted">Ranked by meaning, words, and title, then reordered by a language model. Like or dislike a match to shape the next run.</p></div>
+        <div class="toolbar">
+          <button class="btn btn-primary button-md" id="loadMatches" type="button"><i class="ph ph-magnifying-glass" aria-hidden="true"></i>Find my matches</button>
+          <label class="check body-5"><input type="checkbox" id="mRemote">Remote only</label>
+        </div>
+        <div id="matchNote"></div>
+        <div id="matchList"></div>
+      </section>
+
+      <section id="t-chat" class="tab" aria-labelledby="h-chat" hidden>
+        <div class="app-head"><h1 id="h-chat" class="heading-4">Agent chat</h1><p class="body-6 muted">Ask in plain language. The agent searches, opens jobs, compares them with your resume, and saves them. Open Tools used under a reply to see each step.</p></div>
+        <div class="chat-wrap">
+          <div class="chat" id="chat" role="log" aria-live="polite" aria-label="Conversation"></div>
+          <div class="starters" id="starters"></div>
+          <form class="composer" id="chatForm">
+            <label class="sr-only" for="chatIn">Message</label>
+            <input class="input body-3" id="chatIn" maxlength="2000" autocomplete="off" placeholder="Ask about jobs, or say compare the second one with my resume">
+            <button class="btn btn-primary button-md" id="chatSend" type="submit"><i class="ph ph-paper-plane-right" aria-hidden="true"></i>Send</button>
+            <button class="btn btn-ghost button-md" id="chatReset" type="button">Clear</button>
+          </form>
+          <div class="inline-error body-6" id="chatErr" role="alert"></div>
+        </div>
+      </section>
+
+      <section id="t-search" class="tab" aria-labelledby="h-search" hidden>
+        <div class="app-head"><h1 id="h-search" class="heading-4">Search jobs</h1><p class="body-6 muted">Try the retrieval modes side by side. Hybrid merges three searches. Rerank adds a language model pass on the top 50.</p></div>
+        <form class="toolbar" id="searchForm">
+          <label class="sr-only" for="q">Search query</label>
+          <input class="input body-3 grow" id="q" minlength="2" maxlength="500" placeholder="Data analyst with SQL and dashboards" required>
+          <label class="sr-only" for="mode">Mode</label>
+          <select class="select body-5" id="mode" style="width:auto"><option value="hybrid">Hybrid</option><option value="hybrid_rerank">Hybrid and rerank</option><option value="vector">Vector only</option><option value="fts">Full text only</option></select>
+          <label class="sr-only" for="loc">Location contains</label>
+          <input class="input body-5" id="loc" placeholder="Location contains" style="width:200px">
+          <label class="check body-5"><input type="checkbox" id="sRemote">Remote</label>
+          <button class="btn btn-primary button-md" type="submit"><i class="ph ph-magnifying-glass" aria-hidden="true"></i>Search</button>
+        </form>
+        <div id="searchList"></div>
+      </section>
+
+      <section id="t-saved" class="tab" aria-labelledby="h-saved" hidden>
+        <div class="app-head"><h1 id="h-saved" class="heading-4">Saved jobs</h1><p class="body-6 muted">Jobs you saved from matches, search, or chat.</p></div>
+        <div id="savedList"></div>
+      </section>
+    </div>
+  </div>
 </main>
 
-<script>
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let token = null; try { token = localStorage.getItem("jm_token"); } catch (e) {}
-let signup = false;
+<footer class="footer">
+  <div class="page footer-row">
+    <div>
+      <a class="brand" href="/" aria-label="JobMatch home"><svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="body-1">JobMatch</span></a>
+      <p class="caption-2 muted" style="margin-top:var(--s-100);max-width:420px">A portfolio project. Postings come from a public dataset and are not live openings.</p>
+    </div>
+    <nav class="footer-links body-5" aria-label="Footer">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="https://github.com/gkarthik04/jobmatch-agent" rel="noopener">GitHub</a>
+      <a href="https://github.com/gkarthik04/jobmatch-agent/blob/main/evals/RESULTS.md" rel="noopener">Evaluation results</a>
+    </nav>
+  </div>
+</footer>
 
-async function api(path, opts = {}) {
-  const headers = { ...(opts.headers || {}) };
-  if (token) headers.Authorization = "Bearer " + token;
-  if (opts.json) { headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(opts.json); }
-  const r = await fetch(path, { ...opts, headers });
-  if (r.status === 204) return null;
-  const data = await r.json().catch(() => ({}));
-  if (r.status === 401 && token) { logout(); }
-  if (!r.ok) throw new Error(data.error?.message || ("Request failed (" + r.status + ")"));
-  return data;
-}
-function show() {
-  $("#auth").classList.toggle("hidden", !!token);
-  $("#app").classList.toggle("hidden", !token);
-  $("#who").textContent = token ? "" : "";
-  if (token) { loadProfile(); loadChat(); loadSaved(); }
-}
-function logout() { token = null; try { localStorage.removeItem("jm_token"); } catch (e) {} show(); }
-$("#logout").onclick = logout;
-$("#authSwitch").onclick = () => { signup = !signup; $("#authTitle").textContent = signup ? "Sign up" : "Log in";
-  $("#authBtn").textContent = signup ? "Create account" : "Log in"; $("#authSwitch").textContent = signup ? "Have an account? Log in" : "Need an account? Sign up"; };
-$("#authBtn").onclick = async () => {
-  $("#authErr").textContent = "";
-  try {
-    const d = await api(signup ? "/auth/signup" : "/auth/login", { method: "POST", json: { email: $("#email").value, password: $("#password").value } });
-    token = d.access_token; try { localStorage.setItem("jm_token", token); } catch (e) {}
-    show();
-  } catch (e) { $("#authErr").textContent = e.message; }
-};
-$("#tabs").addEventListener("click", e => {
-  const t = e.target.dataset.t; if (!t) return;
-  document.querySelectorAll("#tabs button[data-t]").forEach(b => b.classList.toggle("on", b === e.target));
-  document.querySelectorAll(".tab").forEach(x => x.classList.add("hidden")); $("#t-" + t).classList.remove("hidden");
-  if (t === "saved") loadSaved();
-});
+<dialog id="authDialog" aria-labelledby="authTitle">
+  <form id="authForm" novalidate>
+    <div class="dialog-head">
+      <div><h2 class="heading-5" id="authTitle">Create your account</h2><p class="body-6 muted" id="authSub" style="margin-top:var(--s-50)">Then upload your resume to see matches.</p></div>
+      <button class="btn btn-ghost icon-btn" type="button" id="authClose" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="field"><label class="body-5" for="email">Email</label><input class="input body-3" id="email" type="email" autocomplete="username" inputmode="email"><div class="field-error body-6" id="emailErr"></div></div>
+    <div class="field"><label class="body-5" for="password">Password</label><input class="input body-3" id="password" type="password" autocomplete="new-password"><div class="field-error body-6" id="passErr"></div><span class="caption-2 muted">At least 8 characters.</span></div>
+    <div class="inline-error body-6" id="authErr" role="alert"></div>
+    <div style="display:flex;gap:var(--s-100);flex-wrap:wrap;margin-top:var(--s-200)">
+      <button class="btn btn-primary button-md" id="authBtn" type="submit">Create account</button>
+      <button class="btn btn-ghost button-md" id="authSwitch" type="button">I already have an account</button>
+    </div>
+  </form>
+</dialog>
 
-const chips = (arr, cls = "") => (arr || []).map(s => `<span class="chip ${cls}">${esc(s)}</span>`).join("");
-async function loadProfile() {
-  try {
-    const p = await api("/profile");
-    $("#profileView").innerHTML = `<div class="card"><h2>${esc(p.name)} <span class="tag">${p.experience_years} yrs experience</span></h2>
-      <p><b>Skills</b><br>${chips(p.skills)}</p><p><b>Target roles</b><br>${chips(p.preferred_roles)}</p>
-      <p><b>Locations</b><br>${chips(p.preferred_locations) || '<span class="muted">none stated</span>'}</p>
-      <p><b>Education</b><br>${p.education.map(e => esc(`${e.degree} — ${e.institution}${e.year ? " (" + e.year + ")" : ""}`)).join("<br>")}</p>
-      <p><b>Projects</b></p>${p.projects.map(x => `<p style="margin:4px 0"><b>${esc(x.name)}</b> <span class="muted">${esc(x.description)}</span><br>${chips(x.technologies)}</p>`).join("")}</div>`;
-  } catch (e) { $("#profileView").innerHTML = `<p class="muted">No profile yet. Upload your resume above.</p>`; }
-}
-$("#upload").onclick = async () => {
-  const f = $("#file").files[0]; $("#upErr").textContent = ""; if (!f) { $("#upErr").textContent = "Choose a PDF first."; return; }
-  const fd = new FormData(); fd.append("file", f); $("#upload").disabled = true; $("#upload").textContent = "Parsing…";
-  try { await api("/resume", { method: "POST", body: fd }); await loadProfile(); } catch (e) { $("#upErr").textContent = e.message; }
-  $("#upload").disabled = false; $("#upload").textContent = "Upload & parse";
-};
-
-function jobCard(j, m) {
-  const posted = j.posted_at ? new Date(j.posted_at).toLocaleDateString() : "";
-  const fit = m ? `<div class="fit"><div class="score">${m.fit_score}<span class="muted">/100</span></div><div class="bar"><i style="width:${m.fit_score}%"></i></div></div>` : "";
-  return `<div class="card job" data-id="${j.id}"><div class="row"><div><h3>${esc(j.title)}</h3>
-    <div class="muted">${esc(j.company || "")} · ${esc(j.location || "")}${j.remote ? ' <span class="tag">remote</span>' : ""} ${posted ? "· " + posted : ""} · id ${j.id}</div></div>${fit}</div>
-    ${m ? `<p>${esc(m.why_it_matches)}</p><div>${chips(m.matched_skills, "good")}${chips(m.missing_skills, "warn")}</div>` : `<p class="muted">${esc(j.snippet)}…</p><div>${chips(j.skills)}</div>`}
-    <div class="actions">${m ? `<button class="ghost" data-fb="1">👍 Like</button><button class="ghost" data-fb="0">👎 Dislike</button>` : ""}
-    <button class="ghost" data-save="1">☆ Save</button>
-    ${!m && j.ranks ? `<span class="muted">ranks: ${esc(Object.entries(j.ranks).map(([k, v]) => k + " #" + v).join(", "))}${j.rerank_score != null ? " · rerank " + j.rerank_score : ""}</span>` : ""}</div></div>`;
-}
-async function jobAction(e) {
-  const card = e.target.closest(".job"); if (!card) return; const id = +card.dataset.id;
-  try {
-    if (e.target.dataset.fb != null) { await api("/feedback", { method: "POST", json: { job_id: id, liked: e.target.dataset.fb === "1" } }); e.target.textContent = e.target.dataset.fb === "1" ? "👍 Liked" : "👎 Disliked"; }
-    if (e.target.dataset.save) { await api("/saved", { method: "POST", json: { job_id: id } }); e.target.textContent = "★ Saved"; }
-    if (e.target.dataset.unsave) { await api("/saved/" + id, { method: "DELETE" }); card.remove(); }
-  } catch (err) { alert(err.message); }
-}
-["#matchList", "#searchList", "#savedList"].forEach(s => $(s).addEventListener("click", jobAction));
-
-$("#loadMatches").onclick = async () => {
-  const b = $("#loadMatches"); b.disabled = true; b.textContent = "Ranking…"; $("#matchList").innerHTML = '<p class="muted">Hybrid search → rerank → explaining matches…</p>';
-  try {
-    const rows = await api("/matches?limit=10" + ($("#mRemote").checked ? "&remote=true" : ""));
-    $("#matchList").innerHTML = rows.length ? rows.map(m => jobCard(m.job, m)).join("") : '<p class="muted">No matches found.</p>';
-  } catch (e) { $("#matchList").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
-  b.disabled = false; b.textContent = "Find my matches";
-};
-$("#doSearch").onclick = async () => {
-  const p = new URLSearchParams({ q: $("#q").value, mode: $("#mode").value, limit: 10 });
-  if ($("#loc").value) p.set("location", $("#loc").value); if ($("#sRemote").checked) p.set("remote", "true");
-  $("#searchList").innerHTML = '<p class="muted">Searching…</p>';
-  try { const d = await api("/search?" + p); $("#searchList").innerHTML = d.results.map(j => jobCard(j, null)).join("") || '<p class="muted">No results.</p>'; }
-  catch (e) { $("#searchList").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
-};
-$("#q").addEventListener("keydown", e => { if (e.key === "Enter") $("#doSearch").click(); });
-async function loadSaved() {
-  try { const rows = await api("/saved");
-    $("#savedList").innerHTML = rows.length ? rows.map(j => jobCard(j, null).replace('data-save="1">☆ Save', 'data-unsave="1">✕ Remove')).join("") : '<p class="muted">Nothing saved yet — save jobs from Matches, Search, or ask the agent.</p>'; } catch (e) {}
-}
-
-function addMsg(role, text, extra) {
-  const d = document.createElement("div"); d.className = "msg " + (role === "user" ? "user" : "bot"); d.textContent = text;
-  if (extra) d.appendChild(extra); $("#chat").appendChild(d); $("#chat").scrollTop = 1e9; return d;
-}
-function toolPanel(res) {
-  const tools = res.steps.filter(s => s.kind === "tool"); const u = res.usage;
-  const det = document.createElement("details");
-  const plan = res.steps.find(s => s.kind === "llm" && s.text && res.steps.some(t => t.kind === "tool"));
-  det.innerHTML = `<summary>${tools.length ? "🔧 " + tools.map(t => t.name).join(" → ") : "no tools used"} · ${u.llm_calls} LLM call(s) · ${u.prompt_tokens + u.output_tokens} tokens · ${u.latency_ms} ms</summary>` +
-    (plan ? `<div class="muted">Plan: ${esc(plan.text)}</div>` : "") +
-    tools.map(t => `<div class="tool ${t.ok ? "" : "fail"}">${t.ok ? "✓" : "✗"} step ${t.step}: ${esc(t.name)}(${esc(JSON.stringify(t.args))}) · ${Math.round(t.latency_ms)} ms${t.error ? " · " + esc(t.error) : ""}</div>`).join("");
-  return det;
-}
-async function loadChat() {
-  try { const h = await api("/chat/history"); $("#chat").innerHTML = ""; h.forEach(m => addMsg(m.role, m.content));
-    if (!h.length) addMsg("bot", "Hi! I can search the jobs index, compare jobs to your resume, and save jobs for you. Try: “find remote data analyst jobs”."); } catch (e) {}
-}
-async function send() {
-  const t = $("#chatIn").value.trim(); if (!t) return; $("#chatIn").value = ""; addMsg("user", t);
-  const wait = addMsg("bot", "Thinking…"); $("#chatSend").disabled = true;
-  try { const r = await api("/chat", { method: "POST", json: { message: t } }); wait.remove(); addMsg("bot", r.reply, toolPanel(r)); loadSaved(); }
-  catch (e) { wait.textContent = "Error: " + e.message; }
-  $("#chatSend").disabled = false;
-}
-$("#chatSend").onclick = send; $("#chatIn").addEventListener("keydown", e => { if (e.key === "Enter") send(); });
-$("#chatReset").onclick = async () => { await api("/chat/history", { method: "DELETE" }); loadChat(); };
-show();
-</script>
+<script src="/static/app.js" defer></script>
 </body>
 </html>
