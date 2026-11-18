@@ -1,0 +1,301 @@
+[
+ {
+  "id": "data",
+  "label": "Data analyst",
+  "years": 1.5,
+  "skills": [
+   "SQL",
+   "Power BI",
+   "Excel",
+   "Tableau",
+   "Statistics"
+  ],
+  "role": "Data Analyst",
+  "results": [
+   {
+    "title": "Data Engineering Analyst",
+    "company": "Horizontal Talent",
+    "location": "Denver, CO",
+    "remote": false,
+    "matched": [
+     "sql",
+     "tableau",
+     "power bi"
+    ],
+    "missing": [
+     "python",
+     "java",
+     "spark"
+    ],
+    "overlap": 20
+   },
+   {
+    "title": "Data Analyst",
+    "company": "Company not listed",
+    "location": "Etna, OH",
+    "remote": true,
+    "matched": [
+     "sql",
+     "statistics",
+     "tableau"
+    ],
+    "missing": [
+     "python",
+     "data analysis"
+    ],
+    "overlap": 60
+   },
+   {
+    "title": "Power BI Developer",
+    "company": "Odyssey Information Services",
+    "location": "Piqua, OH",
+    "remote": false,
+    "matched": [
+     "sql",
+     "power bi"
+    ],
+    "missing": [
+     "etl",
+     "data analysis",
+     "communication"
+    ],
+    "overlap": 40
+   },
+   {
+    "title": "Sr. Reporting Analyst (SQL, PowerBI)",
+    "company": "BravoTECH",
+    "location": "Richardson, TX",
+    "remote": false,
+    "matched": [
+     "sql",
+     "power bi"
+    ],
+    "missing": [],
+    "overlap": 100
+   }
+  ]
+ },
+ {
+  "id": "backend",
+  "label": "Backend engineer",
+  "years": 2.0,
+  "skills": [
+   "Python",
+   "FastAPI",
+   "PostgreSQL",
+   "Docker",
+   "AWS"
+  ],
+  "role": "Backend Engineer",
+  "results": [
+   {
+    "title": "Lead Software Engineer, Backend (Java, Go)",
+    "company": "Capital One",
+    "location": "Richmond, VA",
+    "remote": false,
+    "matched": [
+     "python",
+     "docker",
+     "aws"
+    ],
+    "missing": [
+     "java",
+     "scala",
+     "sql"
+    ],
+    "overlap": 23
+   },
+   {
+    "title": "Front End Engineer II, AWS Accessibility",
+    "company": "Amazon Web Services (AWS)",
+    "location": "Arlington, VA",
+    "remote": false,
+    "matched": [
+     "aws"
+    ],
+    "missing": [
+     "javascript",
+     "typescript",
+     "node.js"
+    ],
+    "overlap": 11
+   },
+   {
+    "title": "Software Development Engineer, AWS Marketplace",
+    "company": "Amazon Web Services (AWS)",
+    "location": "Austin, TX",
+    "remote": false,
+    "matched": [
+     "aws"
+    ],
+    "missing": [
+     "machine learning",
+     "sales",
+     "marketing"
+    ],
+    "overlap": 20
+   },
+   {
+    "title": "AWS DevOps Engineer",
+    "company": "Tech Consulting",
+    "location": "Atlanta, GA",
+    "remote": false,
+    "matched": [
+     "python",
+     "docker",
+     "aws"
+    ],
+    "missing": [
+     "java",
+     "c++",
+     "git"
+    ],
+    "overlap": 33
+   }
+  ]
+ },
+ {
+  "id": "frontend",
+  "label": "Frontend developer",
+  "years": 1.0,
+  "skills": [
+   "JavaScript",
+   "React",
+   "TypeScript",
+   "HTML",
+   "CSS"
+  ],
+  "role": "Frontend Developer",
+  "results": [
+   {
+    "title": "Senior React Developer",
+    "company": "Software Technology Group",
+    "location": "Salt Lake City Metropolitan Area",
+    "remote": false,
+    "matched": [
+     "javascript",
+     "react"
+    ],
+    "missing": [
+     "angular",
+     "vue",
+     "node.js"
+    ],
+    "overlap": 22
+   },
+   {
+    "title": "Expert React Frontend Developer",
+    "company": "RecruitInflux",
+    "location": "Phoenix, AZ",
+    "remote": false,
+    "matched": [
+     "javascript",
+     "react",
+     "html",
+     "css"
+    ],
+    "missing": [
+     "java",
+     "rest apis",
+     "project management"
+    ],
+    "overlap": 50
+   },
+   {
+    "title": "Senior React Native Developer",
+    "company": "Avesta Computer Services",
+    "location": "Austin, TX",
+    "remote": false,
+    "matched": [
+     "javascript",
+     "react"
+    ],
+    "missing": [
+     "ci/cd",
+     "android",
+     "ios"
+    ],
+    "overlap": 33
+   },
+   {
+    "title": "Senior Developer , React Native",
+    "company": "Avesta Computer Services",
+    "location": "Austin, Texas Metropolitan Area",
+    "remote": false,
+    "matched": [
+     "javascript",
+     "react"
+    ],
+    "missing": [
+     "ci/cd",
+     "android",
+     "ios"
+    ],
+    "overlap": 33
+   }
+  ]
+ },
+ {
+  "id": "finance",
+  "label": "Accountant",
+  "years": 4.0,
+  "skills": [
+   "Accounting",
+   "Excel",
+   "QuickBooks",
+   "Financial analysis",
+   "SAP"
+  ],
+  "role": "Accountant",
+  "results": [
+   {
+    "title": "Corporate Accountant I or II, Financial Accounting & Analysis, West Omaha, HEMPHILL EXCLUSIVE!",
+    "company": "Hemphill - Search \u2022 Consulting \u2022 Staffing",
+    "location": "Omaha, NE",
+    "remote": false,
+    "matched": [
+     "accounting",
+     "finance"
+    ],
+    "missing": [
+     "leadership"
+    ],
+    "overlap": 67
+   },
+   {
+    "title": "Director of Accounting",
+    "company": "Robert Half",
+    "location": "Los Angeles, CA",
+    "remote": false,
+    "matched": [
+     "accounting"
+    ],
+    "missing": [],
+    "overlap": 100
+   },
+   {
+    "title": "Accountant I Corporate Reporting",
+    "company": "CVR Energy, Inc.",
+    "location": "Sugar Land, TX",
+    "remote": false,
+    "matched": [
+     "excel",
+     "accounting"
+    ],
+    "missing": [],
+    "overlap": 100
+   },
+   {
+    "title": "Accounts Payable Specialist",
+    "company": "iTECH",
+    "location": "San Diego, CA",
+    "remote": false,
+    "matched": [
+     "excel"
+    ],
+    "missing": [],
+    "overlap": 100
+   }
+  ]
+ }
+]

@@ -1,0 +1,132 @@
+[
+ {
+  "id": "search",
+  "label": "Search and refine",
+  "turns": [
+   {
+    "user": "Find remote data analyst jobs",
+    "tools": [
+     {
+      "name": "search_jobs",
+      "args": {
+       "remote": true,
+       "query": "data analyst"
+      },
+      "ok": true,
+      "ms": 983
+     }
+    ],
+    "reply": "Here are the remote data analyst jobs I found:\n\n1. Data Analyst, (Etna, OH / Remote) [5881]\n2. eCommerce Data Analyst, Radiant Systems Inc (United States / Remote) [6827]\n3. Sr. Data Intelligence Analyst- RWE, MMIT (Managed Markets Insight & Technology) (United States / Remote) [6716]\n4 ...",
+    "llm_calls": 2,
+    "total_ms": 18629
+   },
+   {
+    "user": "compare the 2nd one with my resume",
+    "tools": [
+     {
+      "name": "compare_resume_to_job",
+      "args": {
+       "job_id": 6827
+      },
+      "ok": true,
+      "ms": 127
+     }
+    ],
+    "reply": "The eCommerce Data Analyst position at Radiant Systems Inc [6827] has a fit score of 0. The system indicates that your profile is missing key skills such as data analysis, project management, customer service, and leadership.",
+    "llm_calls": 2,
+    "total_ms": 11561
+   }
+  ]
+ },
+ {
+  "id": "save",
+  "label": "Save and recall",
+  "turns": [
+   {
+    "user": "Find python backend developer jobs",
+    "tools": [
+     {
+      "name": "search_jobs",
+      "args": {
+       "query": "python backend developer"
+      },
+      "ok": true,
+      "ms": 971
+     }
+    ],
+    "reply": "I found these Python backend developer jobs for you:\n\n1. Python Developer, Planet Technology (United States) [6110]\n2. Python Developer, Interviewed AI (United States) [8078]\n3. Senior PHP/Drupal Developer, Gigster Network (US-Based Only), Gigster (United States) [5201]\n4 ...",
+    "llm_calls": 2,
+    "total_ms": 9090
+   },
+   {
+    "user": "save the first one",
+    "tools": [
+     {
+      "name": "save_job",
+      "args": {
+       "job_id": 6110
+      },
+      "ok": true,
+      "ms": 330
+     }
+    ],
+    "reply": "I have saved the Python Developer position at Planet Technology [6110] to your saved jobs list.",
+    "llm_calls": 2,
+    "total_ms": 12930
+   },
+   {
+    "user": "what jobs have I saved?",
+    "tools": [
+     {
+      "name": "list_saved_jobs",
+      "args": {},
+      "ok": true,
+      "ms": 123
+     }
+    ],
+    "reply": "You have saved the following job:\n\n1. Python Developer, Planet Technology (United States) [6110]",
+    "llm_calls": 2,
+    "total_ms": 8263
+   }
+  ]
+ },
+ {
+  "id": "filter",
+  "label": "Filters from follow ups",
+  "turns": [
+   {
+    "user": "Show me accountant jobs",
+    "tools": [
+     {
+      "name": "search_jobs",
+      "args": {
+       "query": "accountant"
+      },
+      "ok": true,
+      "ms": 942
+     }
+    ],
+    "reply": "I found these accountant jobs for you:\n\n1. Finance Manager, Finance Operations Accounting, Finance Operations, Accounting, Amazon (Arlington, VA) [8889]\n2. Accounting Clerk, Notre Dame Schools (Chardon, OH) [5072]\n3. Accountant I Corporate Reporting, CVR Energy, Inc. (Sugar Land, TX) [7473]\n4 ...",
+    "llm_calls": 2,
+    "total_ms": 17883
+   },
+   {
+    "user": "only remote ones",
+    "tools": [
+     {
+      "name": "search_jobs",
+      "args": {
+       "query": "accountant",
+       "remote": true
+      },
+      "ok": true,
+      "ms": 940
+     }
+    ],
+    "reply": "I found these remote accountant jobs for you:\n\n1. Senior Accountant, Pro2Learn (United States) [7364]\n2. Director of Finance And Accounting, LHH (Chicago, IL) [5605]\n3. Accounting Supervisor, Pro2Learn (United States) [8210]\n4. Sr Reinsurance Accountant (REMOTE), Jobot (Brooklyn, NY) [7050]\n5 ...",
+    "llm_calls": 2,
+    "total_ms": 18218
+   }
+  ]
+ }
+]

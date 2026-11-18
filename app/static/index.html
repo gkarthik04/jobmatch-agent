@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="/static/styles.css">
 <script>document.documentElement.classList.add("js");</script>
@@ -23,12 +23,13 @@
 </head>
 <body>
 <a class="skip body-5" href="#main">Skip to content</a>
+<div class="cursor-orb" id="cursorOrb" aria-hidden="true"></div>
 
 <header>
   <nav class="nav" id="nav" aria-label="Main">
     <a class="brand" href="/" aria-label="JobMatch home">
       <svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="body-1">JobMatch</span>
+      <span class="brand-word">JobMatch</span>
     </a>
     <div class="nav-links" id="navLinks">
       <a class="nav-link body-5" href="#how">How it works</a>
@@ -46,99 +47,180 @@
 <main id="main">
   <!-- ================= LANDING ================= -->
   <div id="landing">
+    <div class="atmos" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i></div>
+
     <section class="hero" aria-labelledby="hero-title">
       <div class="page">
-        <div class="hero-copy">
-          <h1 id="hero-title" class="heading-1 gradient-text">Know which jobs<br>fit your resume</h1>
-          <p class="hero-sub title-2">Upload your resume. JobMatch ranks real postings against your skills and explains every match and every missing skill.</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary button-lg" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
-            <p class="hero-proof caption-2"><i class="ph ph-check-circle" aria-hidden="true"></i>Searches 5,000+ real postings from a public April 2024 LinkedIn dataset</p>
+        <div class="hero-copy" id="heroCopy">
+          <span class="pill caption-4 fade-up" style="--d:0ms"><i></i>Resume in, ranked shortlist out</span>
+          <h1 id="hero-title" class="heading-1 split" data-split>Know which jobs<br>fit your <span class="accent">resume</span></h1>
+          <p class="hero-sub title-1 fade-up" style="--d:600ms">Upload your resume. JobMatch ranks real postings against your skills and explains every match and every missing skill.</p>
+          <div class="hero-actions fade-up" style="--d:750ms">
+            <button class="btn btn-primary button-lg magnetic" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
+            <a class="text-link body-5" href="#demo">See it work</a>
           </div>
+          <p class="hero-proof caption-2 fade-up" style="--d:850ms"><i class="ph ph-check-circle" aria-hidden="true"></i>Searches 5,000+ real postings from a public April 2024 LinkedIn dataset</p>
         </div>
 
-        <div class="window reveal" role="img" aria-label="Example output for a sample data analyst resume: three ranked job matches with fit scores and skill chips">
-          <div class="window-bar caption-4"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Example output for a sample data analyst resume</span></div>
-          <div class="window-body">
-            <div class="window-side">
-              <span class="caption-3 muted">Profile</span>
-              <span class="title-3">Data analyst</span>
-              <span class="caption-2 muted">1.3 years of experience</span>
-              <div class="chip-row"><span class="chip caption-4">SQL</span><span class="chip caption-4">Power BI</span><span class="chip caption-4">Excel</span><span class="chip caption-4">Statistics</span></div>
-            </div>
-            <div class="window-main">
-              <div class="mini-card">
-                <div class="grow"><div class="title-3">Data Analyst</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>SQL</span><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>Excel</span></div></div>
-                <div class="mini-score"><div class="heading-5">95</div><div class="caption-5 muted">fit score</div></div>
-              </div>
-              <div class="mini-card">
-                <div class="grow"><div class="title-3">Power BI Visual Creator Consultant</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>Power BI</span><span class="chip gap caption-4">To add: Tableau</span></div></div>
-                <div class="mini-score"><div class="heading-5">65</div><div class="caption-5 muted">fit score</div></div>
-              </div>
-              <div class="mini-card">
-                <div class="grow"><div class="title-3">Sr. Reporting Analyst (SQL, PowerBI)</div><div class="chip-row" style="margin-top:var(--s-75)"><span class="chip have caption-4"><i class="ph ph-check" aria-hidden="true"></i>SQL</span><span class="chip gap caption-4">To add: ETL</span></div></div>
-                <div class="mini-score"><div class="heading-5">50</div><div class="caption-5 muted">fit score</div></div>
-              </div>
-            </div>
+        <div class="demo fade-up" id="demo" style="--d:950ms">
+          <div class="demo-bar">
+            <div class="personas" id="personas" role="tablist" aria-label="Sample resumes"></div>
+            <span class="demo-label caption-4"><i class="live-dot" aria-hidden="true"></i>Real results from the index</span>
+          </div>
+          <div class="demo-body">
+            <aside class="demo-side" id="demoSide" aria-label="Sample resume"></aside>
+            <div class="demo-main" id="demoMain" aria-live="polite"></div>
+          </div>
+          <div class="demo-foot">
+            <form id="liveForm">
+              <label class="sr-only" for="liveQ">Try any role</label>
+              <input class="input body-5" id="liveQ" minlength="2" maxlength="120" placeholder="Or try any role, like warehouse supervisor" required>
+              <button class="btn btn-secondary button-sm" type="submit"><i class="ph ph-magnifying-glass" aria-hidden="true"></i>Search the index</button>
+            </form>
+            <span class="caption-5 muted">Skill overlap is the share of the posting's listed skills that the resume already has.</span>
           </div>
         </div>
       </div>
     </section>
+
+    <div class="marquee" aria-hidden="true"><div class="track" id="trackTitles"></div></div>
+    <div class="marquee rev" aria-hidden="true"><div class="track" id="trackSkills"></div></div>
 
     <section class="section" aria-labelledby="problem-title">
       <div class="page">
         <div class="section-head reveal">
           <span class="eyebrow caption-3">The problem</span>
-          <h2 id="problem-title" class="heading-3">Job boards match keywords. Your resume says more than that.</h2>
+          <h2 id="problem-title" class="heading-3">Job boards match keywords.<br>Your resume says more.</h2>
         </div>
-        <div class="problem">
-          <div class="card reveal">
-            <i class="ph ph-funnel" aria-hidden="true" style="font-size:24px;color:var(--muted)"></i>
-            <h3 class="title-2">Keyword filters</h3>
-            <p class="body-6 muted">You search by title, scroll through hundreds of listings, guess which ones fit, and find out about missing skills only after you have applied.</p>
+        <div class="versus">
+          <div class="card before reveal">
+            <span class="caption-3 muted">Keyword filters</span>
+            <ul class="body-3">
+              <li><i class="ph ph-x-circle" aria-hidden="true"></i>Scroll hundreds of listings by title</li>
+              <li><i class="ph ph-x-circle" aria-hidden="true"></i>Guess which ones actually fit</li>
+              <li><i class="ph ph-x-circle" aria-hidden="true"></i>Learn about missing skills after you apply</li>
+            </ul>
           </div>
-          <div class="card after reveal">
-            <i class="ph ph-list-numbers" aria-hidden="true" style="font-size:24px;color:var(--accent)"></i>
-            <h3 class="title-2">A ranked shortlist</h3>
-            <p class="body-6 muted">JobMatch reads your whole resume, searches by meaning and by exact words, orders the best results, and tells you why each one fits.</p>
+          <div class="card after reveal" style="--d:120ms">
+            <span class="caption-3 accent">JobMatch</span>
+            <ul class="body-3">
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i>Reads your whole resume, not one title</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i>Searches by meaning and by exact words</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i>Explains every match and every gap</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="benefits-title">
+    <section class="section band" aria-labelledby="benefits-title">
       <div class="page">
         <div class="section-head reveal">
           <span class="eyebrow caption-3">Benefits</span>
           <h2 id="benefits-title" class="heading-3">From resume to a shortlist you can check</h2>
         </div>
-        <div class="benefits">
-          <article class="card reveal"><span class="icon-tile"><i class="ph ph-ranking" aria-hidden="true"></i></span><h3 class="title-2 card-title">See the best fits first</h3><p class="body-6 muted">Each search runs three ways: by meaning, by words in the description, and by words in the title. A language model then reorders the top 50.</p></article>
-          <article class="card reveal"><span class="icon-tile"><i class="ph ph-chat-text" aria-hidden="true"></i></span><h3 class="title-2 card-title">Know why a job fits</h3><p class="body-6 muted">Every match comes with a short explanation and a fit score out of 100, written from your resume and the posting.</p></article>
-          <article class="card reveal"><span class="icon-tile"><i class="ph ph-target" aria-hidden="true"></i></span><h3 class="title-2 card-title">See the exact skills to add</h3><p class="body-6 muted">Matched and missing skills come from the posting itself, so the gap list is never guessed by a model.</p></article>
-          <article class="card wide reveal"><span class="icon-tile"><i class="ph ph-thumbs-up" aria-hidden="true"></i></span><h3 class="title-2 card-title">Teach it your taste</h3><p class="body-6 muted">Like or dislike a match and your next results move toward what you liked. Jobs you dislike stay hidden.</p></article>
-          <article class="card wide reveal"><span class="icon-tile"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i></span><h3 class="title-2 card-title">Ask instead of filtering</h3><p class="body-6 muted">Say only remote ones, or compare the second one with my resume. The agent remembers the conversation and shows every tool it used.</p></article>
+        <div class="bento">
+          <article class="card w8 reveal" data-spot>
+            <i class="spot" aria-hidden="true"></i>
+            <span class="icon-tile"><i class="ph ph-ranking" aria-hidden="true"></i></span>
+            <h3 class="title-2 card-title">See the best fits first</h3>
+            <p class="body-6 muted">Each search runs three ways, then merges the rankings with weights chosen on test queries. A language model reorders the top 50.</p>
+            <div class="viz merge" aria-hidden="true">
+              <span class="chip caption-4">By meaning</span><i class="ph ph-plus muted"></i>
+              <span class="chip caption-4">By description words</span><i class="ph ph-plus muted"></i>
+              <span class="chip caption-4">By title words</span><i class="ph ph-arrow-right accent"></i>
+              <span class="chip have caption-4">Weighted merge</span><i class="ph ph-arrow-right accent"></i>
+              <span class="chip have caption-4">Rerank top 50</span>
+            </div>
+          </article>
+          <article class="card reveal" data-spot style="--d:100ms">
+            <i class="spot" aria-hidden="true"></i>
+            <span class="icon-tile"><i class="ph ph-chat-text" aria-hidden="true"></i></span>
+            <h3 class="title-2 card-title">Know why a job fits</h3>
+            <p class="body-6 muted">Every match gets a short explanation and a fit score out of 100. A real one:</p>
+            <p class="viz body-6">“This job requires JavaScript, React, HTML, CSS, and Git, which match your skill set. However, it requires US residency and Node.js backend experience.”</p>
+          </article>
+          <article class="card reveal" data-spot>
+            <i class="spot" aria-hidden="true"></i>
+            <span class="icon-tile"><i class="ph ph-target" aria-hidden="true"></i></span>
+            <h3 class="title-2 card-title">See the exact skills to add</h3>
+            <p class="body-6 muted">Matched and missing skills come from the posting itself, never from a guess.</p>
+            <div class="viz chip-row" id="gapViz" aria-label="Example skill gap"></div>
+          </article>
+          <article class="card reveal" data-spot style="--d:100ms">
+            <i class="spot" aria-hidden="true"></i>
+            <span class="icon-tile"><i class="ph ph-thumbs-up" aria-hidden="true"></i></span>
+            <h3 class="title-2 card-title">Teach it your taste</h3>
+            <p class="body-6 muted">Try it. Like a job and it moves up. Dislike one and it disappears.</p>
+            <div class="viz"><div class="mini-rows reorder" id="tasteRows"></div></div>
+          </article>
+          <article class="card reveal" data-spot style="--d:200ms">
+            <i class="spot" aria-hidden="true"></i>
+            <span class="icon-tile"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i></span>
+            <h3 class="title-2 card-title">Ask instead of filtering</h3>
+            <p class="body-6 muted">The agent remembers the conversation and shows every tool it used. Watch it work below.</p>
+            <div class="viz chip-row"><a class="chip caption-4 text-link" href="#agent">only remote ones</a><a class="chip caption-4 text-link" href="#agent">compare the 2nd one</a><a class="chip caption-4 text-link" href="#agent">save the first one</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="page">
+        <div class="section-head reveal" style="margin-bottom:0">
+          <span class="eyebrow caption-3">How it works</span>
+          <h2 id="how-title" class="heading-3">Three steps from PDF to shortlist</h2>
+        </div>
+      </div>
+      <div class="page story" id="story">
+        <div class="triggers" aria-hidden="true"><i style="top:0"></i><i style="top:100vh"></i><i style="top:200vh"></i></div>
+        <div class="story-sticky">
+          <ol class="story-steps" id="steps">
+            <li class="story-step on" data-step="0"><span class="step-num">01</span><h3 class="heading-4">Upload a PDF</h3><p class="body-3 muted">Use a text based PDF up to 5 MB. Your profile is extracted and checked against a strict schema.</p></li>
+            <li class="story-step" data-step="1"><span class="step-num">02</span><h3 class="heading-4">Check your profile</h3><p class="body-3 muted">Review the skills, years of experience, and target roles we found before anything is matched.</p></li>
+            <li class="story-step" data-step="2"><span class="step-num">03</span><h3 class="heading-4">Get matches and ask</h3><p class="body-3 muted">Open your ranked matches, then use chat to search, compare, and save jobs.</p></li>
+          </ol>
+          <div class="scenes" id="scenes" aria-hidden="true">
+            <div class="scene on" data-scene="0">
+              <div class="demo-label caption-4"><i class="ph ph-file-pdf" aria-hidden="true"></i>resume.pdf</div>
+              <div class="pdf"><i class="line h" style="width:42%"></i><i class="line" style="width:68%"></i><i class="line" style="width:54%"></i><i class="line h" style="width:30%;margin-top:var(--s-200)"></i><i class="line" style="width:92%"></i><i class="line" style="width:86%"></i><i class="line" style="width:74%"></i><i class="line h" style="width:34%;margin-top:var(--s-200)"></i><i class="line" style="width:88%"></i><i class="line" style="width:62%"></i><i class="scan"></i></div>
+              <span class="chip have caption-4" style="--k:0;align-self:flex-start"><i class="ph ph-scan" aria-hidden="true"></i>Reading the text</span>
+            </div>
+            <div class="scene" data-scene="1">
+              <div class="demo-label caption-4"><i class="ph ph-identification-card" aria-hidden="true"></i>Extracted profile</div>
+              <div class="chip-row" id="sceneSkills"></div>
+              <p class="body-6 muted" id="sceneYears"></p>
+              <p class="check-row body-5"><i class="ph ph-seal-check" aria-hidden="true"></i>Validated against a strict schema</p>
+            </div>
+            <div class="scene" data-scene="2">
+              <div class="demo-label caption-4"><i class="ph ph-list-numbers" aria-hidden="true"></i>Ranked matches</div>
+              <div class="demo-main" id="sceneRes"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="tagline" aria-label="What JobMatch does">
       <div class="page">
-        <p class="heading-3" id="tagline">Your resume already shows what you are good at. JobMatch turns it into a ranked shortlist, explains every match, and names the skills to add next.</p>
+        <p class="heading-2" id="tagline" data-hl="ranked,shortlist,,skills">Your resume already shows what you are good at. JobMatch turns it into a ranked shortlist, explains every match, and names the skills to add next.</p>
       </div>
     </section>
 
-    <section class="section" id="how" aria-labelledby="how-title">
+    <section class="section band" id="agent" aria-labelledby="agent-title">
       <div class="page">
         <div class="section-head reveal">
-          <span class="eyebrow caption-3">How it works</span>
-          <h2 id="how-title" class="heading-3">Three steps from PDF to shortlist</h2>
+          <span class="eyebrow caption-3">The agent</span>
+          <h2 id="agent-title" class="heading-3">Ask instead of filtering</h2>
+          <p class="body-3 muted">These are real runs of the agent. The tools, arguments, and timings are exactly what it did.</p>
         </div>
-        <ol class="steps">
-          <li class="card reveal"><span class="step-num title-3">1</span><h3 class="title-2 card-title">Upload a PDF</h3><p class="body-6 muted">Use a text based PDF up to 5 MB. Your profile is extracted and checked against a strict schema.</p></li>
-          <li class="card reveal"><span class="step-num title-3">2</span><h3 class="title-2 card-title">Check your profile</h3><p class="body-6 muted">Review the skills, years of experience, and target roles we found before anything is matched.</p></li>
-          <li class="card reveal"><span class="step-num title-3">3</span><h3 class="title-2 card-title">Get matches and ask</h3><p class="body-6 muted">Open your ranked matches, then use chat to search, compare, and save jobs.</p></li>
-        </ol>
+        <div class="theatre reveal">
+          <div class="scenarios" id="scenarios" role="tablist" aria-label="Agent examples"></div>
+          <div class="terminal">
+            <div class="term-bar caption-4"><span class="mono">agent.run</span><button class="btn btn-ghost button-xsm" id="replay" type="button"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i>Replay</button></div>
+            <div class="term-body" id="termBody" role="log" aria-live="polite"></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -150,10 +232,10 @@
           <p class="body-3 muted">We built an evaluation suite and publish every number it produces.</p>
         </div>
         <div class="stats">
-          <div class="card stat reveal"><div class="heading-3">0.799</div><p class="body-6 muted">Ranking quality (nDCG@10) with rerank, up from 0.687 for vector search alone, on 43 test queries.</p></div>
-          <div class="card stat reveal"><div class="heading-3">15 of 15</div><p class="body-6 muted">Scripted agent conversations passed, with the right tool and the right arguments every turn.</p></div>
-          <div class="card stat reveal"><div class="heading-3">100%</div><p class="body-6 muted">Of 15 test resumes parsed into a valid structured profile on the first attempt.</p></div>
-          <div class="card stat reveal"><div class="heading-3">4.87 of 5</div><p class="body-6 muted">Average groundedness of match explanations, scored by a language model on 30 samples.</p></div>
+          <div class="card stat" data-spot><i class="spot" aria-hidden="true"></i><div class="big"><span data-count="0.799" data-dec="3">0.799</span></div><p class="body-6 muted">Ranking quality (nDCG@10) with rerank, up from 0.687 for vector search alone, on 43 test queries.</p><div class="bar" aria-hidden="true"><i style="--v:0.799"></i></div></div>
+          <div class="card stat" data-spot><i class="spot" aria-hidden="true"></i><div class="big"><span data-count="15" data-dec="0">15</span> <small>of 15</small></div><p class="body-6 muted">Scripted agent conversations passed, with the right tool and the right arguments every turn.</p><div class="bar" aria-hidden="true"><i style="--v:1"></i></div></div>
+          <div class="card stat" data-spot><i class="spot" aria-hidden="true"></i><div class="big"><span data-count="100" data-dec="0">100</span><small>%</small></div><p class="body-6 muted">Of 15 test resumes parsed into a valid structured profile on the first attempt.</p><div class="bar" aria-hidden="true"><i style="--v:1"></i></div></div>
+          <div class="card stat" data-spot><i class="spot" aria-hidden="true"></i><div class="big"><span data-count="4.87" data-dec="2">4.87</span> <small>of 5</small></div><p class="body-6 muted">Average groundedness of match explanations, scored by a language model on 30 samples.</p><div class="bar" aria-hidden="true"><i style="--v:0.974"></i></div></div>
         </div>
         <div class="stat-note reveal">
           <p class="body-6 muted">These numbers come from our own test set of 5,000 postings and synthetic resumes. They show the system works as designed, not that it will find your next job.</p>
@@ -162,32 +244,32 @@
       </div>
     </section>
 
-    <section class="section" id="faq" aria-labelledby="faq-title">
-      <div class="page">
+    <section class="section band" id="faq" aria-labelledby="faq-title">
+      <div class="page faq-wrap">
         <div class="section-head reveal">
           <span class="eyebrow caption-3">FAQ</span>
           <h2 id="faq-title" class="heading-3">Questions people ask first</h2>
         </div>
         <div class="faq reveal">
-          <details><summary class="body-2">Is JobMatch free?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. You can create an account and use every feature without a card.</div></details>
-          <details><summary class="body-2">Which resumes work?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Text based PDFs up to 5 MB. Scanned images are not supported, because there is no text to read.</div></details>
-          <details><summary class="body-2">Are these live job openings?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">No. The index comes from a public dataset of LinkedIn postings from April 2024, and it grows in small batches every six hours. Use it to see how the matching works, not to apply.</div></details>
-          <details><summary class="body-2">How are matches ranked?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Three searches run together: one by meaning, one on the posting text, and one on the title. Their results are merged, and a language model reorders the top 50.</div></details>
-          <details><summary class="body-2">What happens to my resume?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The text is stored in the app database so matches can be computed, and only your account can read it. To extract your profile, the text is sent to the Google Gemini API.</div></details>
-          <details><summary class="body-2">Can I trust the explanations?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The skill gap comes from a skills list matched against the posting. The explanation and the fit score are written by a language model, so they can be wrong. Treat them as a starting point.</div></details>
-          <details><summary class="body-2">What can the chat agent do?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">It can search jobs, open a job, compare it with your resume, save it, and list your saved jobs. Each reply shows the tools it called.</div></details>
-          <details><summary class="body-2">Does it learn from my feedback?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. Likes pull your next results toward similar jobs. Dislikes push them away and hide that job.</div></details>
-          <details><summary class="body-2">Why is it sometimes slow or busy?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">The demo runs on free model quotas. If a model is busy you will see a short message. Wait a minute and try again.</div></details>
-          <details><summary class="body-2">Can I read the code?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-6">Yes. The project is open source on GitHub, including the evaluation suite.</div></details>
+          <details><summary class="title-2">Is JobMatch free?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">Yes. You can create an account and use every feature without a card.</div></details>
+          <details><summary class="title-2">Which resumes work?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">Text based PDFs up to 5 MB. Scanned images are not supported, because there is no text to read.</div></details>
+          <details><summary class="title-2">Are these live job openings?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">No. The index comes from a public dataset of LinkedIn postings from April 2024, and it grows in small batches every six hours. Use it to see how the matching works, not to apply.</div></details>
+          <details><summary class="title-2">How are matches ranked?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">Three searches run together: one by meaning, one on the posting text, and one on the title. Their results are merged, and a language model reorders the top 50.</div></details>
+          <details><summary class="title-2">What happens to my resume?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">The text is stored in the app database so matches can be computed, and only your account can read it. To extract your profile, the text is sent to the Google Gemini API.</div></details>
+          <details><summary class="title-2">Can I trust the explanations?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">The skill gap comes from a skills list matched against the posting. The explanation and the fit score are written by a language model, so they can be wrong. Treat them as a starting point.</div></details>
+          <details><summary class="title-2">What can the chat agent do?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">It can search jobs, open a job, compare it with your resume, save it, and list your saved jobs. Each reply shows the tools it called.</div></details>
+          <details><summary class="title-2">Does it learn from my feedback?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">Yes. Likes pull your next results toward similar jobs. Dislikes push them away and hide that job.</div></details>
+          <details><summary class="title-2">Why is it sometimes slow or busy?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">The demo runs on free model quotas. If a model is busy you will see a short message. Wait a minute and try again.</div></details>
+          <details><summary class="title-2">Can I read the code?<i class="ph ph-plus" aria-hidden="true"></i></summary><div class="answer body-3">Yes. The project is open source on GitHub, including the evaluation suite.</div></details>
         </div>
       </div>
     </section>
 
     <section class="section final" aria-labelledby="final-title">
       <div class="page">
-        <div class="card reveal">
-          <h2 id="final-title" class="heading-3">Know which jobs<br>fit your resume</h2>
-          <button class="btn btn-primary button-lg" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
+        <div class="inner reveal">
+          <h2 id="final-title" class="heading-2">Know which jobs<br>fit your <span class="accent">resume</span></h2>
+          <button class="btn btn-primary button-lg magnetic" type="button" data-auth="signup"><i class="ph ph-upload-simple" aria-hidden="true"></i>Upload your resume</button>
           <p class="risk caption-2"><span><i class="ph ph-check" aria-hidden="true"></i>Free to use</span><span><i class="ph ph-check" aria-hidden="true"></i>No card needed</span><span><i class="ph ph-check" aria-hidden="true"></i>Clear your chat history any time</span></p>
         </div>
       </div>
@@ -262,17 +344,20 @@
 </main>
 
 <footer class="footer">
-  <div class="page footer-row">
-    <div>
-      <a class="brand" href="/" aria-label="JobMatch home"><svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="body-1">JobMatch</span></a>
-      <p class="caption-2 muted" style="margin-top:var(--s-100);max-width:420px">A portfolio project. Postings come from a public dataset and are not live openings.</p>
+  <div class="page">
+    <div class="footer-row">
+      <div>
+        <a class="brand" href="/" aria-label="JobMatch home"><svg class="brand-mark" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10.5l2.8 2.8L14 7.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-word">JobMatch</span></a>
+        <p class="caption-2 muted" style="margin-top:var(--s-100);max-width:420px">A portfolio project. Postings come from a public dataset and are not live openings.</p>
+      </div>
+      <nav class="footer-links body-5" aria-label="Footer">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="https://github.com/gkarthik04/jobmatch-agent" rel="noopener">GitHub</a>
+        <a href="https://github.com/gkarthik04/jobmatch-agent/blob/main/evals/RESULTS.md" rel="noopener">Evaluation results</a>
+      </nav>
     </div>
-    <nav class="footer-links body-5" aria-label="Footer">
-      <a href="/privacy">Privacy</a>
-      <a href="/terms">Terms</a>
-      <a href="https://github.com/gkarthik04/jobmatch-agent" rel="noopener">GitHub</a>
-      <a href="https://github.com/gkarthik04/jobmatch-agent/blob/main/evals/RESULTS.md" rel="noopener">Evaluation results</a>
-    </nav>
+    <div class="wordmark" aria-hidden="true">JobMatch</div>
   </div>
 </footer>
 
@@ -293,5 +378,6 @@
 </dialog>
 
 <script src="/static/app.js" defer></script>
+<script src="/static/landing.js" defer></script>
 </body>
 </html>

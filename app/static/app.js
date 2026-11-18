@@ -216,7 +216,7 @@
   const fb = new Map();
   function jobCard(j, m, opts = {}) {
     const posted = j.posted_at ? new Date(j.posted_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
-    const fit = m ? `<div class="fit"><div class="heading-5">${m.fit_score}<span class="caption-2 muted"> / 100</span></div><div class="bar" aria-hidden="true"><i data-fit="${m.fit_score}"></i></div></div>` : "";
+    const fit = m ? `<div class="fit"><div class="num">${m.fit_score}<span class="caption-2 muted"> / 100</span></div><div class="bar" aria-hidden="true"><i data-fit="${m.fit_score}"></i></div></div>` : "";
     const body = m
       ? `<p class="body-6">${esc(m.why_it_matches)}</p>
          <div class="chip-row">${chips(m.matched_skills, "have", '<i class="ph ph-check" aria-hidden="true"></i>')}${(m.missing_skills || []).map((s) => `<span class="chip gap caption-4">To add: ${esc(s)}</span>`).join("")}</div>`
@@ -373,31 +373,6 @@
   });
 
   /* ----------------------------------------------------- landing behaviours */
-  // scroll reveals: once per element, never on an unthrottled scroll listener
-  const revealEls = $$(".reveal");
-  if (reduced || !("IntersectionObserver" in window)) revealEls.forEach((el) => el.classList.add("in"));
-  else {
-    const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
-    revealEls.forEach((el) => io.observe(el));
-  }
-
-  // tagline: each word moves from muted to full colour as it crosses a trigger line
-  const tag = $("#tagline");
-  if (tag) {
-    const words = tag.textContent.trim().split(/\s+/);
-    tag.setAttribute("aria-label", tag.textContent.trim());
-    tag.innerHTML = words.map((w) => `<span class="w" aria-hidden="true">${esc(w)}</span>`).join(" ");
-    const spans = $$(".w", tag);
-    if (reduced || !("IntersectionObserver" in window)) spans.forEach((s) => s.classList.add("on"));
-    else {
-      const wio = new IntersectionObserver((entries) => {
-        const hit = entries.filter((en) => en.isIntersecting).map((en) => en.target).sort((a, b) => spans.indexOf(a) - spans.indexOf(b));
-        hit.forEach((el, i) => { el.style.transitionDelay = `${Math.min(i * 40, 400)}ms`; el.classList.add("on"); wio.unobserve(el); });
-      }, { rootMargin: "0px 0px -45% 0px", threshold: 0 });
-      spans.forEach((s) => wio.observe(s));
-    }
-  }
-
   // mark the current section in the nav
   if ("IntersectionObserver" in window) {
     const secs = ["how", "results", "faq"].map((id) => document.getElementById(id)).filter(Boolean);

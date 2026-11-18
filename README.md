@@ -10,7 +10,7 @@ An AI career agent in miniature: **upload a resume → get personalised matches 
 | Data | Postgres + pgvector (Neon free tier): HNSW vector index + GIN full-text indexes |
 | LLM | Gemini API (free tier): function calling, JSON-schema output, reranking, explanations |
 | Embeddings | `BAAI/bge-small-en-v1.5` (384-d) via fastembed/ONNX, runs in-process (see [why](#design-decisions--trade-offs)) |
-| Frontend | One landing page plus the signed in app: plain HTML, CSS and JS served by FastAPI (Geist, Phosphor icons, no build step) |
+| Frontend | Landing page plus signed in app: plain HTML, CSS and JS served by FastAPI, no build step. Instrument Serif, Manrope, JetBrains Mono, Phosphor icons. Interactive demos use real data from the index and real agent runs (`python scripts/build_demo.py` regenerates `app/static/demo/`) |
 | Quality | pytest (mocked LLM + real pgvector in CI), ruff, GitHub Actions, offline eval suite |
 | Ship | Docker, docker-compose, Render blueprint |
 

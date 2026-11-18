@@ -35,7 +35,7 @@ async def test_landing_page_and_legal_pages_are_served():
         assert home.status_code == 200 and "text/html" in home.headers["content-type"]
         assert "Know which jobs" in home.text and "Upload your resume" in home.text
         assert 'application/ld+json' in home.text  # FAQ schema present
-        for path in ("/privacy", "/terms", "/static/styles.css", "/static/app.js", "/static/og.png"):
+        for path in ("/privacy", "/terms", "/static/styles.css", "/static/app.js", "/static/landing.js", "/static/og.png", "/static/demo/personas.json", "/static/demo/agent.json", "/static/demo/ticker.json"):
             assert (await c.get(path)).status_code == 200, path
         assert "image/svg+xml" in (await c.get("/favicon.ico")).headers["content-type"]
 
