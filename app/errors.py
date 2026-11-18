@@ -13,8 +13,12 @@ log = logging.getLogger("app.errors")
 
 
 class AppError(Exception):
-    def __init__(self, status: int, code: str, message: str, details: object = None):
+    def __init__(
+        self, status: int, code: str, message: str, details: object = None,
+        headers: dict[str, str] | None = None,
+    ):
         self.status, self.code, self.message, self.details = status, code, message, details
+        self.headers = headers
         super().__init__(message)
 
 
@@ -28,7 +32,7 @@ def error_response(status: int, code: str, message: str, details: object = None,
 def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError):
-        return error_response(exc.status, exc.code, exc.message, exc.details)
+        return error_response(exc.status, exc.code, exc.message, exc.details, exc.headers)
 
     @app.exception_handler(StarletteHTTPException)
     async def _http_error(_: Request, exc: StarletteHTTPException):

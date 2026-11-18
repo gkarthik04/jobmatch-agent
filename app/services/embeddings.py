@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import logging
 import math
+import time
 from typing import Protocol
 
 from sqlalchemy import select
@@ -38,14 +39,24 @@ def _retryable(exc: BaseException) -> bool:
 class GeminiEmbedder:
     """Batches texts, retries 429/5xx with jittered exponential backoff (free-tier friendly)."""
 
-    def __init__(self, batch_size: int = 50, min_interval_s: float = 0.7):
+    def __init__(self, batch_size: int = 40, items_per_minute: int = 90):
         from google import genai
 
         s = get_settings()
         self.model, self.dim = s.embed_model, s.embed_dim
         self.client = genai.Client(api_key=s.gemini_api_key)
-        self.batch_size, self.min_interval_s = batch_size, min_interval_s
-        self._last = 0.0
+        self.batch_size, self.items_per_minute = batch_size, items_per_minute
+        self._sent: list[tuple[float, int]] = []  # (monotonic time, n items) in the last minute
+
+    async def _throttle(self, n: int) -> None:
+        """Free tier counts every text in a batch as a request: 100/min. Stay under with a window."""
+        while True:
+            now = time.monotonic()
+            self._sent = [(t, k) for t, k in self._sent if now - t < 60]
+            if sum(k for _, k in self._sent) + n <= self.items_per_minute or not self._sent:
+                self._sent.append((now, n))
+                return
+            await asyncio.sleep(max(0.5, 60 - (now - self._sent[0][0]) + 0.1))
 
     async def _one_batch(self, batch: list[str], task: str) -> list[list[float]]:
         from google.genai import types
@@ -57,10 +68,7 @@ class GeminiEmbedder:
             reraise=True,
         ):
             with attempt:
-                wait = self.min_interval_s - (asyncio.get_event_loop().time() - self._last)
-                if wait > 0:
-                    await asyncio.sleep(wait)
-                self._last = asyncio.get_event_loop().time()
+                await self._throttle(len(batch))
                 res = await self.client.aio.models.embed_content(
                     model=self.model,
                     contents=batch,

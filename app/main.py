@@ -9,7 +9,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import health
+from app.api import auth, chat, health, matches, resume
+from app.api import search as search_api
 from app.config import get_settings
 from app.db import dispose_engine
 from app.errors import error_response, install_error_handlers
@@ -52,6 +53,11 @@ def create_app() -> FastAPI:
         return response
 
     app.include_router(health.router)
+    app.include_router(search_api.router)
+    app.include_router(auth.router)
+    app.include_router(resume.router)
+    app.include_router(matches.router)
+    app.include_router(chat.router)
 
     if (STATIC_DIR / "index.html").exists():
         app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

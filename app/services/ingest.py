@@ -79,13 +79,17 @@ def clean_row(row: dict) -> CleanJob | None:
 
 
 def load_feed(path: Path = RAW_PATH) -> list[CleanJob]:
-    """Read + clean + dedupe the CSV, ordered oldest-first so it behaves like a growing feed."""
+    """Read + clean + dedupe the CSV, in a fixed pseudo-random arrival order (a simulated feed)."""
     import pandas as pd
 
     df = pd.read_csv(path, engine="python", on_bad_lines="skip")
     df = df.dropna(subset=["job_id", "title", "description"])
     df["job_id"] = df["job_id"].astype("int64")
-    df = df.drop_duplicates("job_id").sort_values(["listed_time", "job_id"])
+    df = df.drop_duplicates("job_id")
+    # Simulated arrival order: a deterministic shuffle, so the first N postings span the whole
+    # two-week window (time order would put the first 5,000 inside a single 5-hour slice).
+    df["_arrival"] = (df["job_id"] * 2654435761) % (2**32)
+    df = df.sort_values(["_arrival", "job_id"])
     jobs, seen = [], set()
     for row in df.to_dict("records"):
         j = clean_row(row)
