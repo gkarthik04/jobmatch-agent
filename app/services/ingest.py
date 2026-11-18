@@ -54,13 +54,22 @@ def content_hash(title: str, company: str | None, location: str | None, desc: st
     return hashlib.sha256(f"{title}|{company}|{location}|{desc}".encode()).hexdigest()
 
 
+def _val(row: dict, key: str) -> str:
+    """Cell as text; pandas NaN / None / the string 'nan' become ''."""
+    v = row.get(key)
+    if v is None or (isinstance(v, float) and v != v):
+        return ""
+    s = str(v)
+    return "" if s.strip().lower() in ("nan", "none", "null") else s
+
+
 def clean_row(row: dict) -> CleanJob | None:
-    title = clean_text(str(row.get("title") or ""))
-    desc = clean_text(str(row.get("description") or ""))
+    title = clean_text(_val(row, "title"))
+    desc = clean_text(_val(row, "description"))
     if not title or len(desc) < MIN_DESC_CHARS:
         return None
-    company = clean_text(str(row.get("company_name") or "")) or None
-    location = clean_text(str(row.get("location") or "")) or None
+    company = clean_text(_val(row, "company_name")) or None
+    location = clean_text(_val(row, "location")) or None
     remote_flag = str(row.get("remote_allowed") or "").strip() in ("1", "1.0", "True", "true")
     remote = remote_flag or bool(re.search(r"\bremote\b", f"{title} {location or ''}", re.I))
     ts = row.get("listed_time")
@@ -68,8 +77,8 @@ def clean_row(row: dict) -> CleanJob | None:
         posted = datetime.fromtimestamp(float(ts) / 1000, tz=UTC) if ts == ts and ts else None
     except (TypeError, ValueError):
         posted = None
-    level = clean_text(str(row.get("formatted_experience_level") or "")) or None
-    skills = extract_skills(f"{title}\n{desc}\n{row.get('skills_desc') or ''}")
+    level = clean_text(_val(row, "formatted_experience_level")) or None
+    skills = extract_skills(f"{title}\n{desc}\n{_val(row, 'skills_desc')}")
     return CleanJob(
         source_id=str(row["job_id"]).split(".")[0], title=title[:500], company=company,
         location=location, remote=remote, description=desc, skills=skills,

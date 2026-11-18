@@ -148,9 +148,10 @@ class GeminiLLM:
                     try:
                         res = await self._call(model, contents, system, schema, tools, temperature)
                     except Exception as exc:  # noqa: BLE001
-                        if (classify_error(exc)[0] == "bad_request" and "thinking" in str(exc).lower()
+                        if (classify_error(exc)[0] == "bad_request"
                                 and model not in self._no_thinking_cfg):
-                            self._no_thinking_cfg.add(model)  # this model rejects the knob: retry without
+                            # some models reject thinking_budget=0: retry once without the knob
+                            self._no_thinking_cfg.add(model)
                             res = await self._call(model, contents, system, schema, tools, temperature)
                         else:
                             raise
@@ -160,9 +161,8 @@ class GeminiLLM:
                     log.warning("llm model failed", extra={"model": model, "kind": kind,
                                                            "retry_after": round(delay),
                                                            "error": str(exc)[:200]})
-                    if kind == "bad_request":
-                        raise
-                    self._parked[model] = time.monotonic() + (delay or 60)
+                    # bad_request after the retry above = this model can't serve this request type
+                    self._parked[model] = time.monotonic() + (delay or 1800)
                     continue
                 return self._to_result(res, model, schema, start)
             if not tried:  # everything parked: wait briefly if a per-minute limit frees up soon

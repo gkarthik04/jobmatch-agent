@@ -31,7 +31,7 @@ async def main() -> None:
             {"id": len(cases) + 1, "query": q, "rubric": {"title_matches": must, "title_not_matches": must_not},
              "n_relevant": len(rel), "relevant_source_ids": rel} if MIN_REL <= len(rel) <= MAX_REL
             else (q, len(rel)))
-    OUT.write_text(json.dumps({"snapshot": snapshot, "cases": cases}, indent=1))
+    OUT.write_text(json.dumps({"snapshot": snapshot, "cases": cases}, indent=1), encoding="utf-8")
     print(f"snapshot={snapshot}; wrote {len(cases)} cases to {OUT.name}")
     for c in cases:
         print(f"  {c['n_relevant']:4d}  {c['query']}")

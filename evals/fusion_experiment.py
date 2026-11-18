@@ -72,7 +72,7 @@ async def main() -> None:
         lines.append(f"| {name} | {res['dev'][0]:.3f} | {res['dev'][1]:.3f} | {res['holdout'][0]:.3f} | "
                      f"{res['holdout'][1]:.3f} | {res['all'][0]:.3f} |")
     RES.mkdir(exist_ok=True)
-    (RES / "fusion_experiment.md").write_text("\n".join(lines) + "\n")
+    (RES / "fusion_experiment.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
     await dispose_engine()
 

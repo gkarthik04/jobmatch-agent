@@ -39,3 +39,9 @@ def test_skill_extraction_boundaries():
     s = extract_skills("Experience with MySQL, C++ and JavaScript; not just java-like things")
     assert "mysql" in s and "c++" in s and "javascript" in s
     assert "sql" not in s  # 'sql' inside 'mysql' must not match
+
+
+def test_nan_cells_become_none_not_the_string_nan():
+    j = clean_row(row(company_name=float("nan"), formatted_experience_level=float("nan")))
+    assert j.company is None and j.experience_level is None
+    assert clean_row(row(company_name="nan")).company is None

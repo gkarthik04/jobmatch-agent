@@ -18,7 +18,7 @@ MODES = ["vector", "fts", "hybrid", "hybrid_rerank"]
 
 
 def load_golden() -> dict:
-    return json.loads(GOLDEN.read_text())
+    return json.loads(GOLDEN.read_text(encoding="utf-8"))
 
 
 async def run(embedder, llm, modes=None, k: int = 10, limit_cases: int | None = None, **search_kw) -> dict:

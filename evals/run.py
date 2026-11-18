@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from app.db import dispose_engine
+from app.logging_conf import setup_logging
 from app.services.embeddings import make_embedder
 from app.services.llm import get_llm
 from evals.metrics import md_table
@@ -24,12 +25,12 @@ RES = HERE / "results"
 def save(suite: str, tag: str, data: dict) -> None:
     RES.mkdir(exist_ok=True)
     data["_meta"] = {"suite": suite, "tag": tag, "at": datetime.now(UTC).isoformat(timespec="seconds")}
-    (RES / f"{suite}_{tag}.json").write_text(json.dumps(data, indent=1, default=str))
+    (RES / f"{suite}_{tag}.json").write_text(json.dumps(data, indent=1, default=str), encoding="utf-8")
 
 
 def load(suite: str, tag: str) -> dict | None:
     f = RES / f"{suite}_{tag}.json"
-    return json.loads(f.read_text()) if f.exists() else None
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else None
 
 
 # ---- rendering --------------------------------------------------------------------------------
@@ -63,7 +64,7 @@ def render_retrieval(out: list[str]) -> None:
         out.append(md_table(["Retriever", "nDCG@10", "MRR", "recall@10"], rows) + "\n")
     note = (RES / "retrieval_improvement.md")
     if note.exists():
-        out.append(note.read_text() + "\n")
+        out.append(note.read_text(encoding="utf-8") + "\n")
 
 
 def render_structured(out: list[str]) -> None:
@@ -126,7 +127,7 @@ def render() -> None:
            "`evals/results/`; none are hand-entered._\n"]
     for fn in (render_retrieval, render_structured, render_agent, render_judge):
         fn(out)
-    (HERE / "RESULTS.md").write_text("\n".join(out))
+    (HERE / "RESULTS.md").write_text("\n".join(out), encoding="utf-8")
 
 
 # ---- runners ----------------------------------------------------------------------------------
@@ -140,6 +141,7 @@ async def main() -> None:
     if a.render_only:
         render()
         return
+    setup_logging("WARNING")
     embedder, llm = make_embedder(), get_llm()
     suites = [a.only] if a.only else ["retrieval", "structured", "agent", "judge"]
     for suite in suites:
