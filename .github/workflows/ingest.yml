@@ -1,8 +1,7 @@
 name: Incremental ingestion
-# Adds the next batch of postings (+ re-embeds changed rows) so the index keeps changing.
+# Manual only. Adds archived dataset postings (closed 2024 listings kept for offline evals);
+# the product itself only shows open jobs from the live feed (see live-feed.yml).
 on:
-  schedule:
-    - cron: "0 */6 * * *"
   workflow_dispatch:
     inputs:
       add:

@@ -21,7 +21,7 @@ An AI career agent in miniature: **upload a resume → get personalised matches 
 3. **Matches** → the profile becomes a query; hybrid retrieval + LLM rerank returns the top 10, each with a *why it matches* explanation, matched / missing skills and a fit score. 👍/👎 updates a per-user preference vector (Rocchio) that changes future rankings.
 4. **Agent chat** → a hand-written plan → act → check loop over five tools (`search_jobs`, `get_job_details`, `compare_resume_to_job`, `save_job`, `list_saved_jobs`) with memory in Postgres, so follow-ups like *"only remote ones"* or *"compare the 2nd one with my resume"* work. The UI shows every tool call.
 5. **A changing index** → `python cli.py ingest` (also a scheduled GitHub Action) adds new postings and embeds only new or changed rows.
-6. **Apply links** → every job links to its original listing. Jobs from the live feed are marked **Open now** and have an **Apply** button; archived postings are marked **Archived** with their expiry date. An **Open positions only** filter works in search, matches and the agent (`open_only=true`).
+6. **Open jobs with apply links** → every job you see is open right now and has an **Apply** button that opens the original listing. Closed and archived postings are never shown.
 
 ## Architecture
 
@@ -236,7 +236,9 @@ python -m evals.run                                   # full eval suite -> evals
 
 ## Data
 
-**Two sources.** (1) An archive of ~5,000 LinkedIn postings from April 2024 (below). Their recorded expiry dates are all in 2024, so they are closed: they keep their original links for reference and are labelled *Archived*. (2) A **live feed** of currently open jobs from the [Arbeitnow](https://www.arbeitnow.com/) public API (free, no key, mostly Europe; English postings only, ~600 per refresh). `python cli.py ingest-live` (daily GitHub Action) upserts them with `last_seen_at`; a job that stops appearing in the feed counts as closed after 3 days. Live jobs show a *via Arbeitnow* credit and link to their Arbeitnow page, which leads to the employer's application. I could not find an explicit attribution rule in Arbeitnow's terms; check them before using this beyond a portfolio demo. Remotive's feed was evaluated and rejected: its terms forbid showing jobs behind a signup and its free tier returned only 16 jobs.
+**What you see: open jobs only.** The product searches a live feed of currently open jobs from the [Arbeitnow](https://www.arbeitnow.com/) public API (free, no key, mostly Europe; English postings only, ~600 per refresh). `python cli.py ingest-live` (daily GitHub Action) upserts them with `last_seen_at`; a job that stops appearing in the feed counts as closed after 3 days and disappears from results. Search, matches and the agent all force `open_only`. Each job shows a *via Arbeitnow* credit and links to its Arbeitnow page, which leads to the employer's application. The feed text is double HTML escaped, so it is un-escaped and converted to plain text, and non English postings are filtered out (the embedding model is English). I could not find an explicit attribution rule in Arbeitnow's terms; check them before using this beyond a portfolio demo. Remotive's feed was evaluated and rejected: its terms forbid showing jobs behind a signup and its free tier returned only 16 jobs.
+
+**The 2024 archive (offline only).** The first version indexed ~5,000 LinkedIn postings from April 2024 (below). Their expiry dates are all in 2024, so they are closed: the product never shows them. They remain in the database only as a frozen snapshot for the retrieval evals.
 
 **Archive details.**
 
@@ -255,7 +257,7 @@ Postings come from the public Hugging Face dataset [`datastax/linkedin_job_listi
 
 ## Limitations and future work
 
-* Archived postings are closed; only the live feed (Europe focused, mostly tech and business roles) has real apply links, so open-only results are fewer and skew European.
+* Only open jobs are shown, and the live feed is Europe focused (mostly tech and business roles), so there are fewer results than a full job board and a non tech resume may find few matches.
 * Apply links open third party sites. Links from both sources are validated server side (http and https only) and re-checked in the browser before being rendered.
 * Golden-set labels come from explicit title rubrics, not human reading of every posting, and title-only rubrics favour title-matching retrievers.
 * The LLM judge is the same model family as the generator, so scores are optimistic.

@@ -47,7 +47,12 @@ def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def _validation(_: Request, exc: RequestValidationError):
         details = [{"loc": e["loc"], "msg": e["msg"]} for e in exc.errors()]
-        return error_response(422, "validation_error", "Invalid request", details)
+        message = "Invalid request"
+        if details:  # surface the first problem in plain words
+            first = str(details[0]["msg"]).removeprefix("Value error, ")
+            bad_email = first.startswith("value is not a valid email")
+            message = "Enter a valid email address." if bad_email else first
+        return error_response(422, "validation_error", message, details)
 
     @app.exception_handler(Exception)
     async def _unhandled(_: Request, exc: Exception):

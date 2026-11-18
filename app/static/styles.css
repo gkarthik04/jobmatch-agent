@@ -485,3 +485,22 @@ dialog::backdrop { background: var(--scrim); -webkit-backdrop-filter: blur(8px);
   .res { opacity: 1 !important; }
   .cursor-orb, .orb { display: none; }
 }
+
+/* ---------- sign up form: password field, rules, strength meter ---------- */
+.pw-wrap { display: flex; gap: var(--s-75); }
+.pw-wrap .input { flex: 1; min-width: 0; }
+.meter { display: flex; align-items: center; gap: var(--s-100); }
+.meter .bar { flex: 1; margin: var(--s-0); }
+.meter .bar i { transition-delay: 0ms; transition-duration: 500ms; }
+.meter[data-level="1"] .bar i { background: var(--danger); }
+.meter[data-level="2"] .bar i { background: var(--muted); }
+.meter[data-level="3"] .bar i { background: var(--accent); }
+.rules { display: flex; flex-direction: column; gap: var(--s-50); }
+.rules li { display: flex; align-items: center; gap: var(--s-75); color: var(--muted); transition: color 300ms var(--ease); }
+.rules li .ph { font-size: 16px; transition: transform 500ms var(--ease); }
+.rules li.ok { color: var(--accent); }
+.rules li.ok .ph { transform: scale(1.15); }
+.field-hint { color: var(--muted); }
+.field-hint:empty { display: none; }
+.field-hint .text-link { background: transparent; border: 0; padding: var(--s-0); cursor: pointer; font: inherit; }
+[hidden] { display: none !important; }

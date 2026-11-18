@@ -111,6 +111,109 @@
   /* ----------------------------------------------------------------- auth */
   const dlg = $("#authDialog");
   let authMode = "signup";
+
+  /* ---- validation helpers (the server enforces the same rules) ---- */
+  const TYPOS = {
+    "gmial.com": "gmail.com", "gmai.com": "gmail.com", "gamil.com": "gmail.com", "gmail.co": "gmail.com",
+    "gmail.con": "gmail.com", "gmali.com": "gmail.com", "yaho.com": "yahoo.com", "yahooo.com": "yahoo.com",
+    "yahoo.con": "yahoo.com", "hotmial.com": "hotmail.com", "hotmail.con": "hotmail.com",
+    "outlok.com": "outlook.com", "outlook.con": "outlook.com", "icloud.con": "icloud.com",
+  };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function emailProblem(v) {
+    if (!v) return "Enter your email address.";
+    if (v.length > 254 || !EMAIL_RE.test(v) || /\.\./.test(v) || /^\.|\.@/.test(v)) return "Enter a valid email address, like name@example.com.";
+    return "";
+  }
+  function passwordRules(pw) {
+    return { len: pw.length >= 8 && pw.length <= 72, case: /[a-z]/.test(pw) && /[A-Z]/.test(pw), num: /[0-9]/.test(pw) };
+  }
+  function strength(pw) {
+    const r = passwordRules(pw);
+    const met = Object.values(r).filter(Boolean).length;
+    const bonus = (pw.length >= 12 ? 1 : 0) + (/[^A-Za-z0-9]/.test(pw) ? 1 : 0);
+    if (!pw) return { level: 0, label: "", pct: 0 };
+    if (met < 3) return { level: 1, label: "Too weak", pct: 25 };
+    if (bonus === 0) return { level: 2, label: "Good", pct: 60 };
+    return { level: 3, label: bonus === 2 ? "Strong" : "Strong", pct: bonus === 2 ? 100 : 80 };
+  }
+  function passwordProblem(pw, email) {
+    const r = passwordRules(pw);
+    if (!pw) return "Choose a password.";
+    if (pw.length < 8) return "Use at least 8 characters.";
+    if (pw.length > 72) return "Use at most 72 characters.";
+    if (!r.case) return "Use both upper case and lower case letters.";
+    if (!r.num) return "Add at least one number.";
+    const local = (email || "").split("@")[0].toLowerCase();
+    if (local.length >= 4 && pw.toLowerCase().includes(local)) return "Do not include your email name in the password.";
+    return "";
+  }
+
+  const show = (el, msg) => setError(el, msg);
+  const setInvalid = (input, bad) => input.setAttribute("aria-invalid", String(!!bad));
+  const f = { email: $("#email"), pw: $("#password"), pw2: $("#password2") };
+  const touched = { email: false, pw: false, pw2: false };
+
+  function checkEmail(force = false) {
+    if (!force && !touched.email) return true;
+    const p = emailProblem(f.email.value.trim());
+    show($("#emailErr"), p); setInvalid(f.email, p);
+    return !p;
+  }
+  function typoHint() {
+    const v = f.email.value.trim(), dom = v.split("@")[1]?.toLowerCase();
+    const fix = dom && TYPOS[dom];
+    $("#emailHint").innerHTML = fix && EMAIL_RE.test(v)
+      ? `Did you mean <button class="text-link" type="button" id="typoFix">${esc(v.split("@")[0] + "@" + fix)}</button>?` : "";
+  }
+  function paintPassword() {
+    const pw = f.pw.value, signup = authMode === "signup";
+    $("#pwMeter").hidden = !signup || !pw;
+    $("#pwRules").hidden = !signup;
+    if (!signup) return;
+    const r = passwordRules(pw), s = strength(pw);
+    $$("#pwRules li").forEach((li) => {
+      const ok = r[li.dataset.rule];
+      li.classList.toggle("ok", ok);
+      $("i", li).className = `ph ph-${ok ? "check-circle" : "circle"}`;
+    });
+    $("#pwMeter").dataset.level = s.level;
+    $("#pwBar").style.transform = `scaleX(${s.pct / 100})`;
+    $("#pwLabel").textContent = s.label;
+  }
+  function checkPassword(force = false) {
+    if (authMode === "login") { const p = f.pw.value ? "" : "Enter your password."; if (force || touched.pw) { show($("#passErr"), p); setInvalid(f.pw, p); } return !p; }
+    if (!force && !touched.pw) return true;
+    const p = passwordProblem(f.pw.value, f.email.value.trim());
+    show($("#passErr"), p); setInvalid(f.pw, p);
+    return !p;
+  }
+  function checkConfirm(force = false) {
+    if (authMode === "login") return true;
+    if (!force && !touched.pw2) return true;
+    const p = f.pw2.value ? (f.pw2.value === f.pw.value ? "" : "The passwords do not match.") : "Type the password again to confirm it.";
+    show($("#confirmErr"), p); setInvalid(f.pw2, p);
+    return !p;
+  }
+
+  f.email.addEventListener("input", () => { checkEmail(); typoHint(); });
+  f.email.addEventListener("blur", () => { touched.email = true; checkEmail(); typoHint(); });
+  f.pw.addEventListener("input", () => { paintPassword(); checkPassword(); if (touched.pw2) checkConfirm(); });
+  f.pw.addEventListener("blur", () => { touched.pw = true; checkPassword(); });
+  f.pw2.addEventListener("input", () => checkConfirm());
+  f.pw2.addEventListener("blur", () => { touched.pw2 = true; checkConfirm(); });
+  $("#emailHint").addEventListener("click", (e) => {
+    if (!e.target.closest("#typoFix")) return;
+    f.email.value = e.target.closest("#typoFix").textContent; typoHint(); checkEmail(true); f.pw.focus();
+  });
+  $("#pwToggle").addEventListener("click", () => {
+    const hidden = f.pw.type === "password";
+    f.pw.type = hidden ? "text" : "password"; f.pw2.type = f.pw.type;
+    $("#pwToggle").setAttribute("aria-pressed", String(hidden));
+    $("#pwToggle").setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+    $("#pwToggle i").className = `ph ph-eye${hidden ? "-slash" : ""}`;
+  });
+
   function openAuth(mode) {
     authMode = mode;
     const signup = mode === "signup";
@@ -118,11 +221,17 @@
     $("#authSub").textContent = signup ? "Then upload your resume to see matches." : "Welcome back.";
     $("#authBtn").textContent = signup ? "Create account" : "Log in";
     $("#authSwitch").textContent = signup ? "I already have an account" : "Create an account";
-    $("#password").autocomplete = signup ? "new-password" : "current-password";
-    ["#emailErr", "#passErr", "#authErr"].forEach((s) => setError($(s), ""));
-    $("#email").removeAttribute("aria-invalid"); $("#password").removeAttribute("aria-invalid");
+    f.pw.autocomplete = signup ? "new-password" : "current-password";
+    $("#confirmField").hidden = !signup;
+    Object.keys(touched).forEach((k) => { touched[k] = false; });
+    [f.email, f.pw, f.pw2].forEach((i) => { i.value = i === f.email ? i.value : ""; i.removeAttribute("aria-invalid"); });
+    f.pw.type = "password"; f.pw2.type = "password";
+    $("#pwToggle").setAttribute("aria-pressed", "false"); $("#pwToggle i").className = "ph ph-eye";
+    ["#emailErr", "#passErr", "#confirmErr", "#authErr"].forEach((s) => show($(s), ""));
+    $("#emailHint").innerHTML = "";
+    paintPassword();
     if (!dlg.open) dlg.showModal();
-    $("#email").focus();
+    f.email.focus();
   }
   $("#authSwitch").addEventListener("click", () => openAuth(authMode === "signup" ? "login" : "signup"));
   $("#authClose").addEventListener("click", () => dlg.close());
@@ -130,26 +239,24 @@
 
   $("#authForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = $("#email").value.trim(), password = $("#password").value;
-    let ok = true;
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    setError($("#emailErr"), emailOk ? "" : "Enter a valid email address, like name@example.com.");
-    $("#email").setAttribute("aria-invalid", String(!emailOk));
-    const passOk = password.length >= 8 && password.length <= 72;
-    setError($("#passErr"), passOk ? "" : "Use between 8 and 72 characters.");
-    $("#password").setAttribute("aria-invalid", String(!passOk));
-    ok = emailOk && passOk;
-    setError($("#authErr"), "");
-    if (!ok) return;
+    Object.keys(touched).forEach((k) => { touched[k] = true; });
+    show($("#authErr"), "");
+    const email = f.email.value.trim(), password = f.pw.value;
+    const results = [checkEmail(true), checkPassword(true), checkConfirm(true)];
+    if (results.includes(false)) {
+      const bad = [f.email, f.pw, f.pw2].find((i) => i.getAttribute("aria-invalid") === "true");
+      bad?.focus();
+      return;
+    }
     const btn = $("#authBtn"); btn.disabled = true; const label = btn.textContent; btn.textContent = "One moment";
     try {
       const d = await api(authMode === "signup" ? "/auth/signup" : "/auth/login", { method: "POST", json: { email, password } });
       saveToken(d.access_token);
-      $("#password").value = "";
+      f.pw.value = ""; f.pw2.value = "";
       dlg.close();
       currentTab = "profile";
       showView();
-    } catch (err) { setError($("#authErr"), err.message); }
+    } catch (err) { show($("#authErr"), err.message); }
     btn.disabled = false; btn.textContent = label;
   });
 
@@ -224,7 +331,7 @@
     if (j.is_open) {
       return `<a class="btn btn-primary button-sm" ${attrs}>Apply<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a><span class="caption-5 muted">via ${esc(j.source_label)}</span>`;
     }
-    const note = j.expires_at ? `Listing expired ${esc(monthYear(j.expires_at))}` : "Archived listing, probably closed";
+    const note = j.expires_at ? `Listing expired ${esc(monthYear(j.expires_at))}` : "This listing is closed";
     return `<a class="btn btn-ghost button-sm" ${attrs}>View original listing<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a><span class="caption-5 muted">${note}</span>`;
   }
   function jobCard(j, m, opts = {}) {
@@ -246,7 +353,7 @@
     ].join("");
     return `<article class="card job" data-id="${j.id}">
       <div class="job-top"><div><h3 class="title-2">${esc(j.title)}</h3>
-        <div class="job-meta caption-2"><span>${esc(j.company || "Company not listed")}</span><span>${esc(j.location || "")}</span>${j.remote ? '<span class="chip caption-4">Remote</span>' : ""}${j.is_open ? '<span class="chip have caption-4">Open now</span>' : '<span class="chip gap caption-4">Archived</span>'}${posted ? `<span>${posted}</span>` : ""}</div></div>${fit}</div>
+        <div class="job-meta caption-2"><span>${esc(j.company || "Company not listed")}</span><span>${esc(j.location || "")}</span>${j.remote ? '<span class="chip caption-4">Remote</span>' : ""}${j.is_open ? '<span class="chip have caption-4">Open now</span>' : '<span class="chip gap caption-4">Closed</span>'}${posted ? `<span>${posted}</span>` : ""}</div></div>${fit}</div>
       ${body}<div class="job-actions">${actions}</div></article>`;
   }
   function paintBars(root) {
@@ -295,7 +402,7 @@
     const b = $("#loadMatches"); b.disabled = true;
     $("#matchNote").innerHTML = ""; $("#matchList").innerHTML = skeleton(3);
     try {
-      const rows = await api("/matches?limit=10" + ($("#mRemote").checked ? "&remote=true" : "") + ($("#mOpen").checked ? "&open_only=true" : ""));
+      const rows = await api("/matches?limit=10" + ($("#mRemote").checked ? "&remote=true" : ""));
       matchCache = rows;
       $("#matchList").innerHTML = rows.length ? rows.map((m) => jobCard(m.job, m)).join("")
         : emptyState("tray", "No matches found", "Try turning off Remote only, or upload a resume that lists more skills.");
@@ -315,7 +422,6 @@
     const p = new URLSearchParams({ q, mode: $("#mode").value, limit: 10 });
     if ($("#loc").value.trim()) p.set("location", $("#loc").value.trim());
     if ($("#sRemote").checked) p.set("remote", "true");
-    if ($("#sOpen").checked) p.set("open_only", "true");
     $("#searchList").innerHTML = skeleton(3);
     try {
       const d = await api("/search?" + p);

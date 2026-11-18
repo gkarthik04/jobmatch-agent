@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,9 +12,36 @@ from app.security import create_token, current_user, hash_password, verify_passw
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-class Credentials(BaseModel):
+def password_problem(password: str, email: str = "") -> str | None:
+    """Signup password policy. The browser shows the same rules live; the server is the authority."""
+    if len(password) < 8:
+        return "Use at least 8 characters."
+    if len(password) > 72:  # bcrypt ignores bytes past 72
+        return "Use at most 72 characters."
+    if not (any(c.islower() for c in password) and any(c.isupper() for c in password)):
+        return "Use both upper case and lower case letters."
+    if not any(c.isdigit() for c in password):
+        return "Add at least one number."
+    local = email.split("@")[0].lower()
+    if len(local) >= 4 and local in password.lower():
+        return "Do not include your email name in the password."
+    return None
+
+
+class LoginIn(BaseModel):
+    """Login does not apply the signup policy, so accounts made under older rules keep working."""
+
     email: EmailStr
-    password: str = Field(min_length=8, max_length=72)  # bcrypt ignores bytes past 72
+    password: str = Field(min_length=1, max_length=72)
+
+
+class SignupIn(LoginIn):
+    @model_validator(mode="after")
+    def _check_password(self):
+        problem = password_problem(self.password, str(self.email))
+        if problem:
+            raise ValueError(problem)
+        return self
 
 
 class TokenOut(BaseModel):
@@ -23,7 +50,7 @@ class TokenOut(BaseModel):
 
 
 @router.post("/signup", response_model=TokenOut, status_code=201)
-async def signup(body: Credentials, session: AsyncSession = Depends(get_session)):
+async def signup(body: SignupIn, session: AsyncSession = Depends(get_session)):
     email = body.email.lower()
     if (await session.execute(select(User.id).where(User.email == email))).first():
         raise AppError(409, "email_taken", "An account with this email already exists")
@@ -38,7 +65,7 @@ async def signup(body: Credentials, session: AsyncSession = Depends(get_session)
 
 
 @router.post("/login", response_model=TokenOut)
-async def login(body: Credentials, session: AsyncSession = Depends(get_session)):
+async def login(body: LoginIn, session: AsyncSession = Depends(get_session)):
     user = (
         await session.execute(select(User).where(User.email == body.email.lower()))
     ).scalar_one_or_none()

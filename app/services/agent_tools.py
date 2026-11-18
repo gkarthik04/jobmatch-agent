@@ -33,9 +33,6 @@ class SearchArgs(BaseModel):
     remote: bool | None = Field(None, description="true = remote jobs only")
     location: str | None = Field(None, description="City/state/country substring, e.g. 'Austin'")
     posted_within_days: int | None = Field(None, ge=1, le=365, description="Only recent postings")
-    open_only: bool | None = Field(
-        None, description="true = only jobs that are open to apply to right now (live feed)"
-    )
     limit: int = Field(5, ge=1, le=10, description="How many results (default 5)")
 
 
@@ -61,7 +58,7 @@ def _brief(j: Job) -> dict:
 async def search_jobs(ctx: AgentContext, a: SearchArgs) -> dict:
     filters = SearchFilters(
         location=a.location, remote=a.remote, posted_within_days=a.posted_within_days,
-        open_only=bool(a.open_only),
+        open_only=True,  # the product only surfaces jobs that are open to apply to
     )
     hits = await search(
         ctx.session, ctx.embedder, a.query, filters=filters, mode="hybrid", limit=a.limit * 3
@@ -70,8 +67,7 @@ async def search_jobs(ctx: AgentContext, a: SearchArgs) -> dict:
     ctx.state["last_query"] = a.query
     ctx.state["last_filters"] = {
         k: v for k, v in {"remote": a.remote, "location": a.location,
-                          "posted_within_days": a.posted_within_days,
-                          "open_only": a.open_only}.items() if v is not None
+                          "posted_within_days": a.posted_within_days}.items() if v is not None
     }
     ctx.state["last_results"] = [h.job.id for h in hits]
     return {"count": len(hits), "results": [{"position": i + 1, **_brief(h.job)} for i, h in enumerate(hits)]}

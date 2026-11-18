@@ -7,10 +7,12 @@ stops appearing in the feed is treated as closed after OPEN_WINDOW_DAYS.
 """
 
 import hashlib
+import html
 import json
 import logging
 import re
 import time
+import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 
@@ -24,8 +26,20 @@ USER_AGENT = "jobmatch-portfolio/1.0 (open source demo; contact via GitHub)"
 SOURCE = "arbeitnow"
 OPEN_WINDOW_DAYS = 3
 
-_EN = {"the", "and", "you", "we", "with", "for", "our", "will", "your", "to", "of", "in", "is", "are"}
-_DE = {"und", "der", "die", "das", "wir", "für", "mit", "sie", "ein", "eine", "ist", "den", "von", "zu"}
+_EN = {"the", "and", "you", "we", "with", "for", "our", "will", "your", "to", "of", "in", "is", "are",
+       "this", "that", "have", "experience", "team", "work", "as", "be", "on", "an"}
+_OTHER = {  # stopwords of languages the English embedding model cannot match well
+    "de": {"und", "der", "die", "das", "wir", "für", "mit", "sie", "ein", "eine", "ist", "den", "von", "zu",
+           "auf", "bei", "als", "nicht", "oder", "werden", "auch"},
+    "nl": {"het", "een", "van", "voor", "met", "je", "jij", "wij", "bij", "aan", "door", "naar", "ook",
+           "heel", "waar", "binnen", "onze", "ons", "gaat", "werken"},
+    "fr": {"le", "la", "les", "des", "pour", "vous", "nous", "avec", "une", "est", "dans", "sur", "que",
+           "qui", "notre", "votre", "ce", "au", "du"},
+    "es": {"el", "los", "las", "para", "con", "una", "por", "que", "nuestro", "como", "del", "se"},
+    "it": {"il", "gli", "per", "con", "una", "che", "nostro", "della", "sono", "del", "alle"},
+    "pt": {"os", "as", "para", "com", "uma", "que", "nosso", "dos", "das", "não"},
+    "sv": {"och", "att", "det", "som", "för", "med", "vi", "är", "på", "en", "av"},
+}
 
 
 _PROMO = re.compile(r"\s*Find (more )?(English Speaking )?Jobs in [A-Za-z ]+ on Arbeitnow\s*$", re.I)
@@ -36,17 +50,31 @@ def make_source_id(slug: str) -> str:
     return f"{SOURCE}:{hashlib.sha1(slug.encode()).hexdigest()[:24]}"
 
 
+_BLOCK_END = re.compile(r"(?i)<\s*(br\s*/?|/p|/div|/li|/ul|/ol|/h[1-6]|/tr)\s*>")
+_LI_START = re.compile(r"(?i)<\s*li(\s[^>]*)?>")
+
+
 def _tidy(s: str) -> str:
-    """The feed contains U+FFFD replacement characters (a broken dash) and a promo footer."""
-    return _PROMO.sub("", clean_text(s).replace("\ufffd", "-")).strip()
+    """Feed HTML -> readable text.
+
+    The feed double escapes its HTML (&lt;p&gt;...), so we unescape first, turn block ends into
+    line breaks, strip the tags, and unescape again. Also drops a promo footer and U+FFFD.
+    """
+    s = html.unescape(s or "")
+    s = _LI_START.sub("\n• ", s)
+    s = _BLOCK_END.sub("\n", s)
+    s = clean_text(s).replace("\ufffd", "-")
+    s = re.sub(r"[ \t]*\n[ \t]*", "\n", s)
+    s = re.sub(r"\n{2,}(?=• )", "\n", s)  # keep list items together
+    return _PROMO.sub("", s).strip()
 
 
 def looks_english(text_: str) -> bool:
     """Cheap stopword vote. The index uses an English embedding model, so we skip German postings."""
-    words = re.findall(r"[a-zäöüß]+", text_.lower())[:400]
+    words = re.findall(r"[a-zà-öø-ÿß]+", text_.lower())[:400]
     en = sum(w in _EN for w in words)
-    de = sum(w in _DE for w in words)
-    return en >= 3 and en > de
+    other = max(sum(w in stop for w in words) for stop in _OTHER.values())
+    return en >= 5 and en >= 2 * other
 
 
 def fetch_pages(pages: int = 3, timeout: float = 30.0, delay_s: float = 1.0) -> list[dict]:
@@ -54,8 +82,14 @@ def fetch_pages(pages: int = 3, timeout: float = 30.0, delay_s: float = 1.0) -> 
     jobs: list[dict] = []
     for page in range(1, pages + 1):
         req = urllib.request.Request(f"{ARBEITNOW_URL}?page={page}", headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - fixed https URL
-            data = json.loads(r.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - fixed https URL
+                data = json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429 and jobs:  # rate limited: keep what we have, try again tomorrow
+                log.warning("live feed rate limited", extra={"page": page})
+                break
+            raise
         jobs.extend(data.get("data", []))
         if not data.get("links", {}).get("next"):
             break
@@ -99,3 +133,31 @@ def clean_feed(raw_jobs: list[dict], now: datetime | None = None) -> list[CleanJ
             seen.add(j.source_id)
             out.append(j)
     return out
+
+
+async def repair_existing(session) -> dict[str, int]:
+    """Clean up stored live rows: re-render descriptions and close non-English postings.
+
+    Safe to run every time. Rewritten descriptions get a new content hash and a NULL embedding,
+    so only those rows are re-embedded.
+    """
+    from sqlalchemy import select, update
+
+    from app.models import Job
+
+    fixed = closed = 0
+    rows = (await session.execute(select(Job).where(Job.source == SOURCE))).scalars().all()
+    for j in rows:
+        new_desc = _tidy(j.description)
+        new_title = _tidy(j.title)
+        if (new_desc, new_title) != (j.description, j.title):
+            j.description, j.title = new_desc, new_title[:500]
+            j.content_hash = content_hash(new_title, j.company, j.location, new_desc)
+            j.embedding = None
+            j.embedding_model = None
+            fixed += 1
+        if j.last_seen_at is not None and not looks_english(f"{j.title} {j.description}"):
+            await session.execute(update(Job).where(Job.id == j.id).values(last_seen_at=None))
+            closed += 1
+    await session.commit()
+    return {"rewritten": fixed, "closed_non_english": closed}

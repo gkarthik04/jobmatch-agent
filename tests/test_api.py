@@ -44,7 +44,7 @@ def test_profile_schema_rejects_bad_types():
 # ---- DB-backed API tests ----------------------------------------------------------------------
 @pytest.mark.db
 async def test_auth_flow(client):
-    creds = {"email": "test-auth1@example.com", "password": "longenough1"}
+    creds = {"email": "test-auth1@example.com", "password": "Longenough1"}
     assert (await client.post("/auth/signup", json=creds)).status_code == 201
     dup = await client.post("/auth/signup", json=creds)
     assert dup.status_code == 409 and dup.json()["error"]["code"] == "email_taken"
@@ -66,7 +66,7 @@ async def test_resume_upload_and_isolation(client, auth):
     assert r.json()["name"] == "Test Candidate" and r.json()["skills"].count("Python") == 1  # deduped
     assert (await client.get("/profile", headers=auth)).status_code == 200
     # another user must not see it
-    other = await client.post("/auth/signup", json={"email": "test-other@example.com", "password": "longenough1"})
+    other = await client.post("/auth/signup", json={"email": "test-other@example.com", "password": "Longenough1"})
     h2 = {"Authorization": f"Bearer {other.json()['access_token']}"}
     assert (await client.get("/profile", headers=h2)).status_code == 404
     bad = await client.post("/resume", headers=auth, files={"file": ("x.pdf", b"hello", "application/pdf")})
@@ -162,7 +162,7 @@ async def test_chat_agent_uses_tools_remembers_and_saves(client, auth, seed_jobs
     hist = (await client.get("/chat/history", headers=auth)).json()
     assert [h["role"] for h in hist] == ["user", "assistant", "user", "assistant"]
     # isolation: a different user has no saved jobs and no history
-    o = await client.post("/auth/signup", json={"email": "test-iso@example.com", "password": "longenough1"})
+    o = await client.post("/auth/signup", json={"email": "test-iso@example.com", "password": "Longenough1"})
     h2 = {"Authorization": f"Bearer {o.json()['access_token']}"}
     assert (await client.get("/saved", headers=h2)).json() == []
     assert (await client.get("/chat/history", headers=h2)).json() == []
@@ -183,24 +183,57 @@ async def test_chat_rate_limit_and_error_envelope(client, auth, fake_llm, monkey
 
 
 @pytest.mark.db
-async def test_search_exposes_apply_links_and_open_only_filter(client, seed_jobs):
-    res = (await client.get("/search", params={"q": "zyxwvu", "limit": 10})).json()["results"]
-    by = {r["title"]: r for r in res}
-    live, archived = by["Zyxwvu Backend Engineer"], by["Zyxwvu Data Analyst"]
-    assert live["is_open"] and live["apply_url"] == "https://example.org/apply/1"
-    assert live["source_label"] == "Arbeitnow"
-    assert not archived["is_open"] and archived["url"].startswith("https://www.linkedin.com/")
-    assert archived["expires_at"].startswith("2024-05-01")
-    only = (await client.get("/search", params={"q": "zyxwvu", "open_only": True})).json()["results"]
-    titles = [r["title"] for r in only]
-    # the index may also hold real live jobs: every result must be open, and the archived one excluded
-    assert "Zyxwvu Backend Engineer" in titles and "Zyxwvu Data Analyst" not in titles
-    assert all(r["is_open"] for r in only)
+async def test_only_open_jobs_are_ever_returned(client, auth, seed_jobs):
+    res = (await client.get("/search", params={"q": "zyxwvu", "limit": 20})).json()["results"]
+    titles = [r["title"] for r in res]
+    assert "Zyxwvu Backend Engineer" in titles and "Zyxwvu Archived Tester" not in titles
+    assert all(r["is_open"] for r in res)  # closed and archived postings are never shown
+    live = next(r for r in res if r["title"] == "Zyxwvu Backend Engineer")
+    assert live["apply_url"] == "https://example.org/apply/1" and live["source_label"] == "Arbeitnow"
+    await client.post("/resume", headers=auth, files={"file": ("cv.pdf", make_pdf(RESUME), "application/pdf")})
+    rows = (await client.get("/matches", headers=auth, params={"limit": 20})).json()
+    assert rows and all(m["job"]["is_open"] for m in rows)
+    assert "Zyxwvu Archived Tester" not in {m["job"]["title"] for m in rows}
+
+
+# ---- password policy -----------------------------------------------------------------------------
+@pytest.mark.parametrize("password,message", [
+    ("Short1a", "Use at least 8 characters."),
+    ("alllowercase1", "Use both upper case and lower case letters."),
+    ("ALLUPPERCASE1", "Use both upper case and lower case letters."),
+    ("NoDigitsHere", "Add at least one number."),
+    ("Ab1" + "x" * 80, "Use at most 72 characters."),
+    ("MyKarthik2024Pass", "Do not include your email name in the password."),
+])
+def test_password_policy_messages(password, message):
+    from app.api.auth import password_problem
+
+    assert password_problem(password, "karthik@example.com") == message
+
+
+def test_a_good_password_passes_the_policy():
+    from app.api.auth import password_problem
+
+    assert password_problem("Correct horse 42", "someone@example.com") is None
 
 
 @pytest.mark.db
-async def test_matches_open_only(client, auth, seed_jobs):
-    await client.post("/resume", headers=auth, files={"file": ("cv.pdf", make_pdf(RESUME), "application/pdf")})
-    rows = (await client.get("/matches", headers=auth, params={"limit": 20, "open_only": True})).json()
-    assert rows and all(m["job"]["is_open"] for m in rows)
-    assert {m["job"]["title"] for m in rows if m["job"]["title"].startswith("Zyxwvu")} == {"Zyxwvu Backend Engineer"}
+async def test_signup_rejects_weak_password_with_a_readable_message(client):
+    r = await client.post("/auth/signup", json={"email": "test-weak2@example.com", "password": "alllowercase1"})
+    assert r.status_code == 422
+    err = r.json()["error"]
+    assert err["code"] == "validation_error" and err["message"] == "Use both upper case and lower case letters."
+    bad_email = await client.post("/auth/signup", json={"email": "not-an-email", "password": "Longenough1"})
+    assert bad_email.status_code == 422 and bad_email.json()["error"]["message"] == "Enter a valid email address."
+
+
+@pytest.mark.db
+async def test_accounts_made_under_older_rules_can_still_log_in(client):
+    from app.models import User
+    from app.security import hash_password
+
+    async with client.maker() as s:
+        s.add(User(email="test-legacy@example.com", password_hash=hash_password("weakpass")))
+        await s.commit()
+    r = await client.post("/auth/login", json={"email": "test-legacy@example.com", "password": "weakpass"})
+    assert r.status_code == 200 and r.json()["access_token"]

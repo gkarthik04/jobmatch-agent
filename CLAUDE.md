@@ -20,6 +20,8 @@ Mini version of Elip's product. Python 3.11, FastAPI (async), SQLAlchemy 2 async
 - `tests/` pytest; LLM and embedder are fakes. Tests marked `db` need `TEST_DATABASE_URL` (pgvector); CI provides it.
 
 ## Conventions
+- The product only ever shows open jobs: search, matches and the agent force `open_only` (archived 2024 rows exist only for evals; evals call the service layer directly).
+- Static files are served with `Cache-Control: no-cache` so deploys never leave stale CSS/JS.
 - Errors: raise `AppError(status, code, message)`; envelope is `{"error": {code, message, request_id}}`.
 - Every Gemini call goes through `app/services/llm.py`; never call the SDK elsewhere.
 - Changing `EMBED_PROVIDER/EMBED_MODEL/EMBED_DIM` requires `alembic upgrade head` (0003 resizes + drops old vectors) and re-running `cli.py ingest --add 0` to re-embed.

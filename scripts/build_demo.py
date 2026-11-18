@@ -2,7 +2,7 @@
 
     python scripts/build_demo.py            # writes app/static/demo/*.json
 
-* personas.json   - top hybrid-search results from the real index for four sample resumes,
+* personas.json   - top hybrid-search results (open jobs only) from the real index for four sample resumes,
                     with deterministic matched / missing skills and a skill overlap percentage.
 * agent.json      - real traces of the agent loop (tools, arguments, latency, reply excerpt).
 * ticker.json     - real job titles and skills for the marquee.
@@ -48,16 +48,16 @@ PERSONAS = [
         name="Sample", skills=["JavaScript", "React", "TypeScript", "HTML", "CSS"], experience_years=1,
         education=[Education(degree="B.Tech CSE", institution="", year=2025)], projects=[],
         preferred_roles=["Frontend Developer"], preferred_locations=[])),
-    ("finance", "Accountant", ProfileSchema(
-        name="Sample", skills=["Accounting", "Excel", "QuickBooks", "Financial analysis", "SAP"], experience_years=4,
-        education=[Education(degree="B.Com", institution="", year=2020)], projects=[],
-        preferred_roles=["Accountant"], preferred_locations=[])),
+    ("ml", "Data scientist", ProfileSchema(
+        name="Sample", skills=["Python", "SQL", "Machine learning", "PyTorch", "Statistics"], experience_years=2,
+        education=[Education(degree="M.Tech AI", institution="", year=2024)], projects=[],
+        preferred_roles=["Data Scientist"], preferred_locations=[])),
 ]
 
 AGENT_SCENARIOS = [
     ("search", "Search and refine", ["Find remote data analyst jobs", "compare the 2nd one with my resume"]),
     ("save", "Save and recall", ["Find python backend developer jobs", "save the first one", "what jobs have I saved?"]),
-    ("filter", "Filters from follow ups", ["Show me accountant jobs", "only remote ones"]),
+    ("filter", "Filters from follow ups", ["Show me product manager jobs", "only remote ones"]),
 ]
 
 
@@ -80,7 +80,7 @@ async def build_personas(embedder) -> list[dict]:
     async with get_sessionmaker()() as s:
         for pid, label, prof in PERSONAS:
             q = profile_query_text(prof)
-            hits = await search(s, embedder, q, filters=SearchFilters(), mode="hybrid", limit=24)
+            hits = await search(s, embedder, q, filters=SearchFilters(open_only=True), mode="hybrid", limit=24)
             hits = dedupe_hits(hits, limit=4)
             rows = []
             for h in hits:
@@ -127,7 +127,7 @@ async def build_agent(embedder, llm) -> list[dict]:
 async def build_ticker() -> dict:
     async with get_sessionmaker()() as s:
         rows = (await s.execute(text(
-            "SELECT title FROM jobs WHERE length(title) < 40 AND title ~ '^[A-Za-z0-9 ,&/()+.]+$' "
+            "SELECT title FROM jobs WHERE source <> 'linkedin_2024' AND last_seen_at > now() - interval '3 days' AND length(title) < 40 AND title ~ '^[A-Za-z0-9 ,&/()+.]+$' "
             "ORDER BY md5(source_id) LIMIT 400"))).scalars().all()
     seen, titles = set(), []
     for t in rows:

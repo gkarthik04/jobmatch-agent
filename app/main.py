@@ -45,6 +45,9 @@ def create_app() -> FastAPI:
             request_id_var.reset(token)
         ms = round((time.perf_counter() - start) * 1000)
         response.headers["x-request-id"] = rid
+        if request.url.path == "/" or request.url.path.startswith("/static/"):
+            # always revalidate (ETag => cheap 304) so a deploy never leaves visitors on stale CSS/JS
+            response.headers["cache-control"] = "no-cache"
         log.info(
             "request",
             extra={"method": request.method, "path": request.url.path,

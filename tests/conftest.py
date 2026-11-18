@@ -161,13 +161,18 @@ async def seed_jobs(client):
         dict(source_id="test-3", title="Zyxwvu Frontend Developer", company="Gamma", location="Austin, TX",
              remote=False, skills=["react", "javascript"],
              description="zyxwvu frontend react javascript ui " * 10),
+        dict(source_id="test-4", title="Zyxwvu Archived Tester", company="Delta", location="Austin, TX",
+             remote=True, skills=["python"], description="zyxwvu archived python tester role " * 10),
     ]
     from datetime import UTC, datetime
 
-    extras = {  # test-1 is an open live job; test-2 an archived one with an expiry in 2024
-        "test-1": dict(source="arbeitnow", url="https://example.org/jobs/1",
-                       apply_url="https://example.org/apply/1", last_seen_at=datetime.now(UTC)),
-        "test-2": dict(url="https://www.linkedin.com/jobs/view/2/", expires_at=datetime(2024, 5, 1, tzinfo=UTC)),
+    now = datetime.now(UTC)
+    live = {"source": "arbeitnow", "last_seen_at": now}
+    extras = {  # tests 1-3 are open live jobs; test-4 is an archived one that expired in 2024
+        "test-1": dict(**live, url="https://example.org/jobs/1", apply_url="https://example.org/apply/1"),
+        "test-2": dict(**live, url="https://example.org/jobs/2", apply_url="https://example.org/apply/2"),
+        "test-3": dict(**live, url="https://example.org/jobs/3"),
+        "test-4": dict(url="https://www.linkedin.com/jobs/view/4/", expires_at=datetime(2024, 5, 1, tzinfo=UTC)),
     }
     emb = FakeEmbedder()
     async with client.maker() as s:
@@ -188,6 +193,6 @@ async def auth(client):
     import uuid
 
     email = f"test-{uuid.uuid4().hex[:8]}@example.com"
-    r = await client.post("/auth/signup", json={"email": email, "password": "correct horse"})
+    r = await client.post("/auth/signup", json={"email": email, "password": "Correct horse 42"})
     assert r.status_code == 201, r.text
     return {"Authorization": f"Bearer {r.json()['access_token']}"}

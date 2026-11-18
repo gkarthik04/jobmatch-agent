@@ -56,10 +56,24 @@ async def ingest_live(pages: int) -> None:
     feed = lf.clean_feed(raw)
     print(f"live feed: {len(raw)} fetched, {len(feed)} kept (English, complete)")
     async with get_sessionmaker()() as session:
+        print("repair:", await lf.repair_existing(session))
         stats = await ing.upsert_jobs(session, feed, add_new=10**9)
         print(f"upsert: {stats}")
         stats.embedded = await ing.embed_pending(session, make_embedder())
         print(f"embedded {stats.embedded} rows")
+        await ing.analyze(session)
+    await dispose_engine()
+
+
+async def repair_live() -> None:
+    """Re-render stored live descriptions and close non-English ones, then embed what changed."""
+    from app.services import ingest as ing
+    from app.services import live_feed as lf
+    from app.services.embeddings import make_embedder
+
+    async with get_sessionmaker()() as session:
+        print("repair:", await lf.repair_existing(session))
+        print("embedded", await ing.embed_pending(session, make_embedder()), "rows")
         await ing.analyze(session)
     await dispose_engine()
 
@@ -83,6 +97,7 @@ def main() -> None:
     pi = sub.add_parser("ingest")
     pi.add_argument("--add", type=int, default=200, help="max NEW postings to add this run")
     pi.add_argument("--no-embed", action="store_true")
+    sub.add_parser("repair-live")
     pl = sub.add_parser("ingest-live")
     pl.add_argument("--pages", type=int, default=3)
     a = p.parse_args()
@@ -90,6 +105,8 @@ def main() -> None:
         fetch()
     elif a.cmd == "ingest":
         asyncio.run(ingest(a.add, a.no_embed))
+    elif a.cmd == "repair-live":
+        asyncio.run(repair_live())
     elif a.cmd == "ingest-live":
         asyncio.run(ingest_live(a.pages))
     elif a.cmd == "stats":
