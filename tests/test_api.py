@@ -192,7 +192,10 @@ async def test_search_exposes_apply_links_and_open_only_filter(client, seed_jobs
     assert not archived["is_open"] and archived["url"].startswith("https://www.linkedin.com/")
     assert archived["expires_at"].startswith("2024-05-01")
     only = (await client.get("/search", params={"q": "zyxwvu", "open_only": True})).json()["results"]
-    assert [r["title"] for r in only] == ["Zyxwvu Backend Engineer"]
+    titles = [r["title"] for r in only]
+    # the index may also hold real live jobs: every result must be open, and the archived one excluded
+    assert "Zyxwvu Backend Engineer" in titles and "Zyxwvu Data Analyst" not in titles
+    assert all(r["is_open"] for r in only)
 
 
 @pytest.mark.db
