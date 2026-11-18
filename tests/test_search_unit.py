@@ -83,3 +83,16 @@ async def test_rerank_times_out_and_falls_back_to_rrf_order(monkeypatch):
     hits = [_hit(1), _hit(2), _hit(3)]
     out = await rr.rerank(None, object(), "q", hits)
     assert [h.job.id for h in out] == [1, 2, 3]  # untouched RRF order, no exception
+
+
+def test_dedupe_hits_collapses_same_title_and_company_keeping_best():
+    from app.services.search import dedupe_hits
+
+    def h(i, title, company):
+        return SimpleNamespace(job=SimpleNamespace(id=i, title=title, company=company))
+
+    hits = [h(1, "Frontend Dev", "Acme"), h(2, "frontend dev ", "ACME"), h(3, "Frontend Dev", "Beta"),
+            h(4, "Backend Dev", "Acme")]
+    out = dedupe_hits(hits)
+    assert [x.job.id for x in out] == [1, 3, 4]
+    assert [x.job.id for x in dedupe_hits(hits, limit=2)] == [1, 3]

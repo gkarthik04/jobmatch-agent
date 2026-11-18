@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Job, SavedJob
 from app.schemas import ProfileSchema
 from app.services.matching import heuristic_fit, skill_gap
-from app.services.search import SearchFilters, search
+from app.services.search import SearchFilters, dedupe_hits, search
 
 
 @dataclass
@@ -56,7 +56,10 @@ def _brief(j: Job) -> dict:
 
 async def search_jobs(ctx: AgentContext, a: SearchArgs) -> dict:
     filters = SearchFilters(location=a.location, remote=a.remote, posted_within_days=a.posted_within_days)
-    hits = await search(ctx.session, ctx.embedder, a.query, filters=filters, mode="hybrid", limit=a.limit)
+    hits = await search(
+        ctx.session, ctx.embedder, a.query, filters=filters, mode="hybrid", limit=a.limit * 3
+    )
+    hits = dedupe_hits(hits, limit=a.limit)
     ctx.state["last_query"] = a.query
     ctx.state["last_filters"] = {
         k: v for k, v in {"remote": a.remote, "location": a.location,

@@ -253,4 +253,6 @@ Postings come from the public Hugging Face dataset [`datastax/linkedin_job_listi
 * The LLM judge is the same model family as the generator, so scores are optimistic.
 * Skills are a ~110-term lexicon, not a learned taxonomy; resumes must be text PDFs (no OCR).
 * Free-tier Gemini quotas cap how many users the live demo can serve per day.
+* `/matches` is slow when uncached (~35-50 s live: an LLM rerank call plus an LLM explanation call on a rate-limited free tier); repeats are cached. Both calls have time budgets and degrade to RRF order / skill-overlap explanations instead of failing.
+* Identical postings listed in several cities are collapsed in matches and the agent's search (the retrieval eval is computed on the raw ranking).
 * Next: cross-encoder rerank on a paid host, learned fusion weights, OCR for scanned resumes, Redis rate limiting, per-user saved searches and alerts, evals in CI on a nightly schedule.

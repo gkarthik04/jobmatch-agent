@@ -13,7 +13,7 @@ from app.schemas import JobOut, ProfileSchema, job_out
 from app.services.embeddings import QUERY, embed_cached
 from app.services.llm import cached_json, get_llm, prompt_key
 from app.services.preferences import apply_preference
-from app.services.search import Hit, SearchFilters, search
+from app.services.search import Hit, SearchFilters, dedupe_hits, search
 from app.services.skills import extract_skills
 
 log = logging.getLogger("app.matching")
@@ -160,8 +160,9 @@ async def get_matches(
     f = filters or SearchFilters()
     f.exclude_ids = list({*f.exclude_ids, *disliked})
     hits = await search(
-        session, embedder, text_, filters=f, mode="hybrid_rerank", limit=k, qvec=qvec, llm=llm
+        session, embedder, text_, filters=f, mode="hybrid_rerank", limit=k * 3, qvec=qvec, llm=llm
     )
+    hits = dedupe_hits(hits, limit=k)
     if not explain:
         return [
             MatchOut(job=job_out(h), why_it_matches="", matched_skills=skill_gap(profile, h.job)[0],

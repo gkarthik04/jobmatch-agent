@@ -178,3 +178,20 @@ async def search(
 
         hits = await rerank(session, llm, query, hits)
     return hits[:limit]
+
+
+def dedupe_hits(hits: list[Hit], limit: int | None = None) -> list[Hit]:
+    """Collapse repeat postings (same title + company, e.g. one job posted in many cities).
+
+    Keeps the best-ranked copy. Applied at the product layer (matches, agent) only: the retrieval
+    eval is computed on the raw ranking so its numbers are unaffected.
+    """
+    seen: set[tuple[str, str]] = set()
+    out: list[Hit] = []
+    for h in hits:
+        key = ((h.job.title or "").strip().lower(), (h.job.company or "").strip().lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(h)
+    return out[:limit] if limit else out
